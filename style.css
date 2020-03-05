@@ -1,0 +1,13 @@
+#game-map {
+  width: 660px;
+  height: 660px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.case {
+  width: 60px;
+  height: 60px;
+  background-color: cadetblue;
+  border: 1px solid darkslategrey;
+}
