@@ -1,0 +1,23 @@
+{
+  "name": "js_game",
+  "version": "1.0.0",
+  "description": "",
+  "main": "case.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "live-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lori0107/js_game.git"
+  },
+  "author": "Lori",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Lori0107/js_game/issues"
+  },
+  "homepage": "https://github.com/Lori0107/js_game#readme",
+  "devDependencies": {
+    "live-server": "^1.2.1"
+  }
+}
