@@ -11,3 +11,10 @@
   background-color: cadetblue;
   border: 1px solid darkslategrey;
 }
+
+.rock {
+  width: 60px;
+  height: 60px;
+  background-color: brown;
+  border: 1px solid darkred;
+}
