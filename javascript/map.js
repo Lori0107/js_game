@@ -20,25 +20,20 @@ class Map {
   getRandomPosition = (arrayPassed) => {
     const positionY = Math.floor(Math.random() * arrayPassed.length);
     const positionX = Math.floor(Math.random() * arrayPassed.length);
-    return {positionY, positionX}
+    return {positionY, positionX};
   }
 
-  generateItemPosition = (itemPassed) => {
+  generateItemPosition = (item, isRegistered) => {
     let val = this.getRandomPosition(this.mapArray);
     if (this.forbiddenCases.some(forbiddenItem => val.positionY === forbiddenItem.positionY && val.positionX === forbiddenItem.positionX)) {
-      console.log("----------- Have to regenerate position -----------")
-      console.log(itemPassed)
-      console.log(val.positionY)
-      console.log(val.positionX)
-      this.generateItemPosition(itemPassed);
-    } else {
-      this.mapArray[val.positionY][val.positionX] = itemPassed;
-      this.mapArray[val.positionY][val.positionX].state = itemPassed.name;
+      return this.generateItemPosition(item, isRegistered);
+    } else if (isRegistered == true) {
+      this.mapArray[val.positionY][val.positionX] = item;
+      this.mapArray[val.positionY][val.positionX].state = item.name;
       this.forbiddenCases.push(val);
-      console.log(itemPassed)
-      console.log(val.positionY)
-      console.log(val.positionX)
-      return val
+      return val;
+    } else {
+      return val;
     }
   }
 
@@ -46,7 +41,7 @@ class Map {
     for(let i = 0; i < numberOfDisabledCases; i++) {
       const val = this.getRandomPosition(this.mapArray);
       if (this.forbiddenCases.some(forbiddenItem => val.positionY === forbiddenItem.positionY && val.positionX === forbiddenItem.positionX)) {
-        i--
+        i--;
       } else {
         this.mapArray[val.positionY][val.positionX].state = "disabled";
         this.forbiddenCases.push(val);
@@ -67,21 +62,11 @@ class Map {
       wand
     ];
 
-    weaponsArray.forEach(weapon => this.generateItemPosition(weapon));
+    weaponsArray.forEach(weapon => this.generateItemPosition(weapon, true));
   }
 
   generatePlayer2Position = (playerItem, forbiddenCasesItem) => {
-    console.log("--------------- Player 1 Position ---------------");
-    console.log(forbiddenCasesItem[0]);
-
-    console.log("--------------- Player 2 RETURN ---------------");
-    const test = this.generateItemPosition(playerItem);
-    console.log("--------------- Player 2 Position ---------------");
-    console.log(test);
-    console.log("Player1", forbiddenCasesItem[0].positionY)
-    console.log("Player1", forbiddenCasesItem[0].positionX)
-    console.log("Player2", test.positionY)
-    console.log("Player2", test.positionX)
+    let test = this.generateItemPosition(playerItem, false);
     if (test.positionX === forbiddenCasesItem[0].positionX && test.positionY === forbiddenCasesItem[0].positionY || 
       test.positionX === forbiddenCasesItem[0].positionX + 1 && test.positionY === forbiddenCasesItem[0].positionY ||
       test.positionX === forbiddenCasesItem[0].positionX - 1  && test.positionY === forbiddenCasesItem[0].positionY ||
@@ -92,12 +77,15 @@ class Map {
       test.positionX === forbiddenCasesItem[0].positionX + 1 && test.positionY === forbiddenCasesItem[0].positionY - 1 ||
       test.positionX === forbiddenCasesItem[0].positionX - 1 && test.positionY === forbiddenCasesItem[0].positionY + 1 
     ) {
-      console.log("--------------- Player position Bad Position ---------------");
-      console.log("Player 1", forbiddenCasesItem);
-      console.log("Player 2", test);
+      return this.generatePlayer2Position(playerItem, forbiddenCasesItem)
+    } else {
+      this.mapArray[test.positionY][test.positionX] = playerItem;
+      this.mapArray[test.positionY][test.positionX].state = playerItem.name;
+      this.forbiddenCases.push(test);
     }
+    // const test = this.generateItemPosition(playerItem, false);
     // do {
-    //   test
+    //   return this.generatePlayer2Position(playerItem, forbiddenCasesItem)
     // } while (test.positionX === forbiddenCasesItem.positionX && test.positionY === forbiddenCasesItem.positionY || 
     //     test.positionX === forbiddenCasesItem.positionX + 1 && test.positionY === forbiddenCasesItem.positionY ||
     //     test.positionX === forbiddenCasesItem.positionX - 1  && test.positionY === forbiddenCasesItem.positionY ||
@@ -108,19 +96,19 @@ class Map {
     //     test.positionX === forbiddenCasesItem.positionX + 1 && test.positionY === forbiddenCasesItem.positionY - 1 ||
     //     test.positionX === forbiddenCasesItem.positionX - 1 && test.positionY === forbiddenCasesItem.positionY + 1 
     //   );
-    //   console.log("2", test)
+    //   this.mapArray[test.positionY][test.positionX] = playerItem;
+    //   this.mapArray[test.positionY][test.positionX].state = playerItem.name;
+    //   console.log("--------------- Player 2 position pushed ---------------");
+    //   console.log(test);
+    //   this.forbiddenCases.push(test);
   }
 
   generatePlayers = () => {
     const player1 = new Player("Player1", 100);
     const player2 = new Player("Player2", 100);
-    let positionPlayer1 = this.generateItemPosition(player1);
-    console.log("----- Position Player 1 -----");
-    console.log(positionPlayer1);
+    let positionPlayer1 = this.generateItemPosition(player1, true);
     this.forbiddenPlayerCases.push(positionPlayer1);
-    console.log("----- Position Player 1 in Array -----");
-    console.log(this.forbiddenPlayerCases);
-    //this.generatePlayer2Position(player2, this.forbiddenPlayerCases)
+    this.generatePlayer2Position(player2, this.forbiddenPlayerCases)
   }
 
   displayItems = (map, customClass) => {
