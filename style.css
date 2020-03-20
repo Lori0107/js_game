@@ -36,18 +36,26 @@
   border: 0.3px solid #ffffff;
 }
 
-.voodoo {
+/* .voodoo {
   width: 60px;
   height: 60px;
   background-image: url("./img/voodoo-doll.png");
   background-size: cover;
   border: 0.3px solid #ffffff;
-}
+} */
 
 .broom {
   width: 60px;
   height: 60px;
   background-image: url("./img/broom.png");
+  background-size: cover;
+  border: 0.3px solid #ffffff;
+}
+
+.poison {
+  width: 60px;
+  height: 60px;
+  background-image: url("./img/poison.png");
   background-size: cover;
   border: 0.3px solid #ffffff;
 }

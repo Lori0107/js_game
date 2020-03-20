@@ -25,7 +25,7 @@ class Map {
     return {positionY, positionX};
   }
 
-  // Generate the disabled cases on the Map
+  // Generate the disabled cases of the Map
   generateDisabledCases = (numberOfDisabledCases) => {
     for(let i = 0; i < numberOfDisabledCases; i++) {
       const val = this.getRandomPosition(this.mapArray);
@@ -56,7 +56,7 @@ class Map {
 
   // Generate weapons's positions
   generateWeapons = () => {
-    this.weaponsArray.push(broom, voodoo, sword, wand);
+    this.weaponsArray.push(broom, poison, sword, wand);
     this.weaponsArray.forEach(weapon => this.generateItemPosition(weapon, true));
   }
 
@@ -66,7 +66,9 @@ class Map {
     this.generatePlayer2Position(player2);
     
     player1.weapon = broom;
-    player2.weapon = broom;
+    broom.position = player1.position;
+
+    player2.weapon = poison;
   }
 
   // Check if 2 items are side by side
