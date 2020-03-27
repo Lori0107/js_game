@@ -135,34 +135,36 @@ class Map {
     }
   }
 
+  // Handle the player's move
   playerMove = (player) => {
-    let playerPosition = player.position;
+    const playerPosition = player.position;
     this.showMoves(playerPosition)
     
     //this.turn += 1;
     //this.playerTurn();
   }
 
+  // Show the moves availables
   showMoves = (position) => {
-    let up = [
+    const up = [
       [position.positionY - 1, position.positionX],
       [position.positionY - 2, position.positionX],
-      [position.positionY - 3, position.positionX]
+      [position.positionY - 3, position.positionX],
     ];
-    let down = [
+    const down = [
       [position.positionY + 1, position.positionX],
       [position.positionY + 2, position.positionX],
-      [position.positionY + 3, position.positionX]
+      [position.positionY + 3, position.positionX],
     ];
-    let right = [
+    const right = [
       [position.positionY, position.positionX + 1],
       [position.positionY, position.positionX + 2],
-      [position.positionY, position.positionX + 3]
+      [position.positionY, position.positionX + 3],
     ];
-    let left = [
+    const left = [
       [position.positionY, position.positionX - 1],
       [position.positionY, position.positionX - 2],
-      [position.positionY, position.positionX - 3]
+      [position.positionY, position.positionX - 3],
     ];
 
     this.checkMoves(up);
@@ -172,6 +174,7 @@ class Map {
     this.generateCases();
   }
   
+  // Check which moves are availables
   checkMoves = (moves) => {
     moves.some(move => {
       if(move[0] < 0 || move[1] < 0 || move[0] > 9 || move[1] > 9) {
@@ -190,5 +193,4 @@ myMap.generateMap();
 myMap.generateDisabledCases(7);
 myMap.generateWeapons();
 myMap.generatePlayers();
-myMap.generateCases();
 myMap.playerTurn();
