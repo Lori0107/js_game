@@ -4,7 +4,8 @@ class Map {
     this.width = width,
     this.mapArray = [],
     this.forbiddenCases = [],
-    this.weaponsArray = []
+    this.weaponsArray = [],
+    this.turn = 0
   }
 
   // Generate the two-dimensional array which represent the game's Map
@@ -56,19 +57,19 @@ class Map {
 
   // Generate weapons's positions
   generateWeapons = () => {
-    this.weaponsArray.push(broom, poison, sword, wand);
+    this.weaponsArray.push(voodoo, sword, wand);
     this.weaponsArray.forEach(weapon => this.generateItemPosition(weapon, true));
   }
 
   // Generate players's positions
   generatePlayers = () => {
-    this.generateItemPosition(player1, true);
-    this.generatePlayer2Position(player2);
-    
     player1.weapon = broom;
     broom.position = player1.position;
+    this.generateItemPosition(player1, true);
 
     player2.weapon = poison;
+    poison.position = player2.position;
+    this.generatePlayer2Position(player2);
   }
 
   // Check if 2 items are side by side
@@ -76,8 +77,8 @@ class Map {
     if (itemOne.positionX === itemTwo.positionX && itemOne.positionY === itemTwo.positionY || 
         itemOne.positionX === itemTwo.positionX + 1 && itemOne.positionY === itemTwo.positionY ||
         itemOne.positionX === itemTwo.positionX - 1  && itemOne.positionY === itemTwo.positionY ||
-        itemOne.positionX === itemTwo.positionX  && itemOne.positionY === itemTwo.positionY + 1 ||
-        itemOne.positionX === itemTwo.positionX  && itemOne.positionY === itemTwo.positionY - 1 ||
+        itemOne.positionX === itemTwo.positionX && itemOne.positionY === itemTwo.positionY + 1 ||
+        itemOne.positionX === itemTwo.positionX && itemOne.positionY === itemTwo.positionY - 1 ||
         itemOne.positionX === itemTwo.positionX + 1 && itemOne.positionY === itemTwo.positionY + 1 ||
         itemOne.positionX === itemTwo.positionX - 1 && itemOne.positionY === itemTwo.positionY - 1 ||
         itemOne.positionX === itemTwo.positionX + 1 && itemOne.positionY === itemTwo.positionY - 1 ||
@@ -109,8 +110,78 @@ class Map {
     this.mapArray.map(y => {
       return y.map(x => {
           this.displayItems('#game-map', x.state.toLowerCase());
-      })
-    })
+      });
+    });
+  }
+
+  // Check if a value is even
+  isEven = (value) => {
+    if (value%2 === 0)
+      return true;
+    else
+      return false;
+  };
+
+  // Determine which player can play
+  playerTurn = () => {
+    if(this.isEven(this.turn)) {
+      player1.canPlay = true;
+      player2.canPlay = false;
+      this.playerMove(player1);
+    } else {
+      player1.canPlay = false;
+      player2.canPlay = true;
+      this.playerMove(player2);
+    }
+  }
+
+  playerMove = (player) => {
+    let playerPosition = player.position;
+    this.showMoves(playerPosition)
+    
+    //this.turn += 1;
+    //this.playerTurn();
+  }
+
+  showMoves = (position) => {
+    let up = [
+      [position.positionY - 1, position.positionX],
+      [position.positionY - 2, position.positionX],
+      [position.positionY - 3, position.positionX]
+    ];
+    let down = [
+      [position.positionY + 1, position.positionX],
+      [position.positionY + 2, position.positionX],
+      [position.positionY + 3, position.positionX]
+    ];
+    let right = [
+      [position.positionY, position.positionX + 1],
+      [position.positionY, position.positionX + 2],
+      [position.positionY, position.positionX + 3]
+    ];
+    let left = [
+      [position.positionY, position.positionX - 1],
+      [position.positionY, position.positionX - 2],
+      [position.positionY, position.positionX - 3]
+    ];
+
+    this.checkMoves(up);
+    this.checkMoves(down);
+    this.checkMoves(right);
+    this.checkMoves(left);
+    this.generateCases();
+  }
+  
+  checkMoves = (moves) => {
+    moves.some(move => {
+      if(move[0] < 0 || move[1] < 0 || move[0] > 9 || move[1] > 9) {
+        return true;
+      } else if (this.mapArray[move[0]][move[1]].state == "disabled") {
+        return true;
+      } else {
+        this.mapArray[move[0]][move[1]].state = "move-available";
+      };
+    });
   }
 };
 
@@ -120,3 +191,4 @@ myMap.generateDisabledCases(7);
 myMap.generateWeapons();
 myMap.generatePlayers();
 myMap.generateCases();
+myMap.playerTurn();
