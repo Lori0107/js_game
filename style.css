@@ -12,6 +12,10 @@
   border: 0.3px solid #ffffff;
 }
 
+.move-available:hover {
+  background-color: #D6BADD;
+}
+
 .empty {
   width: 60px;
   height: 60px;

@@ -101,47 +101,30 @@ class Map {
   }
 
   // Generate a div for each item of the game's Map
-  displayItems = (map, customClass) => {
-    $(map).append('<div class="'+ customClass +'"></div>');
+  displayItems = (map, customClass, customPositionX, customPositionY) => {
+    $(map).append('<div class="'+ customClass +'" data-position-x="' + customPositionX + '" data-position-y="' + customPositionY + '"></div>');
   }
 
   // Generate each Map's cases
   generateCases = () => {
-    this.mapArray.map(y => {
-      return y.map(x => {
-          this.displayItems('#game-map', x.state.toLowerCase());
-      });
-    });
+    this.mapArray.map(y => y.map(x => this.displayItems('#game-map', x.state.toLowerCase(), x.positionX, x.positionY)))
   }
 
   // Check if a value is even
-  isEven = (value) => {
-    if (value%2 === 0)
-      return true;
-    else
-      return false;
-  };
+  isEven = (value) => value%2 === 0;
 
   // Determine which player can play
   playerTurn = () => {
-    if(this.isEven(this.turn)) {
-      player1.canPlay = true;
-      player2.canPlay = false;
-      this.playerMove(player1);
-    } else {
-      player1.canPlay = false;
-      player2.canPlay = true;
-      this.playerMove(player2);
-    }
+    // player1.canPlay = this.isEven(this.turn);
+    // player2.canPlay = !this.isEven(this.turn);
+    this.playerMove(this.isEven(this.turn) ? player1 : player2);
   }
 
   // Handle the player's move
   playerMove = (player) => {
-    const playerPosition = player.position;
-    this.showMoves(playerPosition)
-    
-    //this.turn += 1;
-    //this.playerTurn();
+    this.showMoves(player.position);
+    this.generateCases();
+    this.test(player);
   }
 
   // Show the moves availables
@@ -171,19 +154,42 @@ class Map {
     this.checkMoves(down);
     this.checkMoves(right);
     this.checkMoves(left);
-    this.generateCases();
   }
   
   // Check which moves are availables
   checkMoves = (moves) => {
     moves.some(move => {
-      if(move[0] < 0 || move[1] < 0 || move[0] > 9 || move[1] > 9) {
-        return true;
-      } else if (this.mapArray[move[0]][move[1]].state == "disabled") {
+      if(move[0] < 0 || move[1] < 0 || move[0] > 9 || move[1] > 9 || this.mapArray[move[0]][move[1]].state == "disabled" || this.mapArray[move[0]][move[1]].name === player1.name ||this.mapArray[move[0]][move[1]].name === player2.name) {
         return true;
       } else {
         this.mapArray[move[0]][move[1]].state = "move-available";
+        this.mapArray[move[0]][move[1]].positionY = move[0];
+        this.mapArray[move[0]][move[1]].positionX = move[1];
       };
+    });
+  }
+
+  // Remove the available moves for a player
+  removeMoves = () => {
+    this.mapArray.map(y => {
+      y.map(x => {
+        if (x.state === "move-available") {
+          x.state = "empty";
+        }
+      })
+    })
+  }
+
+  test = (player) => {
+    $("#game-map").on("click", (el) => {
+      if(el.target.className == "move-available") {
+        this.mapArray[player.position.positionY][player.position.positionX] = new Case();
+        this.mapArray[el.target.dataset.positionY][el.target.dataset.positionX] = player;
+        this.removeMoves();
+        $("#game-map").empty();
+        this.turn += 1;
+        this.playerMove(this.isEven(this.turn) ? player1 : player2);
+      }
     });
   }
 };
@@ -194,3 +200,4 @@ myMap.generateDisabledCases(7);
 myMap.generateWeapons();
 myMap.generatePlayers();
 myMap.playerTurn();
+//myMap.generateCases();
