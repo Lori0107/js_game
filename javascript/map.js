@@ -117,6 +117,7 @@ class Map {
   playerTurn = () => {
     // player1.canPlay = this.isEven(this.turn);
     // player2.canPlay = !this.isEven(this.turn);
+    $("#game-map").off("click");
     this.playerMove(this.isEven(this.turn) ? player1 : player2);
   }
 
@@ -159,8 +160,19 @@ class Map {
   // Check which moves are availables
   checkMoves = (moves) => {
     moves.some(move => {
-      if(move[0] < 0 || move[1] < 0 || move[0] > 9 || move[1] > 9 || this.mapArray[move[0]][move[1]].state == "disabled" || this.mapArray[move[0]][move[1]].name === player1.name ||this.mapArray[move[0]][move[1]].name === player2.name) {
+      if(move[0] < 0 || 
+        move[1] < 0 || 
+        move[0] > 9 || 
+        move[1] > 9 || 
+        this.mapArray[move[0]][move[1]].state == "disabled" || 
+        this.mapArray[move[0]][move[1]].name === player1.name ||
+        this.mapArray[move[0]][move[1]].name === player2.name) {
         return true;
+      } else if (this.mapArray[move[0]][move[1]].constructor.name == "Weapon") {
+        this.mapArray[move[0]][move[1]].state += " weapon-available";
+        this.mapArray[move[0]][move[1]].available = true;
+        this.mapArray[move[0]][move[1]].positionY = move[0];
+        this.mapArray[move[0]][move[1]].positionX = move[1];
       } else {
         this.mapArray[move[0]][move[1]].state = "move-available";
         this.mapArray[move[0]][move[1]].positionY = move[0];
@@ -173,22 +185,79 @@ class Map {
   removeMoves = () => {
     this.mapArray.map(y => {
       y.map(x => {
-        if (x.state === "move-available") {
+        if (x.state == "move-available") {
           x.state = "empty";
+        } else if (x.constructor.name == "Weapon") {
+          x.state = x.name
+          x.available = false;
         }
       })
     })
   }
 
+  // Check if the player is on the case where he left his old weapon
+  checkTypeOfPlayerPosition = (playerPosition) => {
+    // playerPosition instanceof Weapon ? console.log('im on weapon') : playerPosition = new Case()
+    console.log("pass here")
+    if(playerPosition instanceof Weapon) {
+      console.log("Im on a weapon")
+    } else {
+      console.log("pass here 2")
+      playerPosition = new Case();
+      console.log(playerPosition)
+    }
+  }
+
+  // Handle the player's position change
+  playerPickNewPosition = (player, newPosition) => {
+    this.mapArray[newPosition.dataset.positionY][newPosition.dataset.positionX] = player;
+    player.position.positionY = parseInt(newPosition.dataset.positionY);
+    player.position.positionX = parseInt(newPosition.dataset.positionX);
+  }
+
+  // Handle the player's weapon change
+  playerPickNewWeapon = (player, newWeapon) => {
+    let w = this.mapArray[newWeapon.dataset.positionY][newWeapon.dataset.positionX];
+    this.mapArray[newWeapon.dataset.positionY][newWeapon.dataset.positionX] = player.weapon;
+    player.weapon = w;
+    player.position.positionY = parseInt(newWeapon.dataset.positionY);
+    player.position.positionX = parseInt(newWeapon.dataset.positionX);
+  }
+
+  // Handle the player's new position on the Map & increment the turn
   test = (player) => {
     $("#game-map").on("click", (el) => {
       if(el.target.className == "move-available") {
-        this.mapArray[player.position.positionY][player.position.positionX] = new Case();
-        this.mapArray[el.target.dataset.positionY][el.target.dataset.positionX] = player;
+        //this.checkTypeOfPlayerPosition(this.mapArray[player.position.positionY][player.position.positionX])
+        
+        if(this.mapArray[player.position.positionY][player.position.positionX] instanceof Weapon) {
+          console.log("Im on a weapon")
+        } else {
+          this.mapArray[player.position.positionY][player.position.positionX] = new Case();
+        }
+
+        this.playerPickNewPosition(player, el.target);
+        
         this.removeMoves();
         $("#game-map").empty();
         this.turn += 1;
-        this.playerMove(this.isEven(this.turn) ? player1 : player2);
+        this.playerTurn();
+
+
+      } else if (el.target.className.includes("weapon-available")) {
+        //this.checkTypeOfPlayerPosition(this.mapArray[player.position.positionY][player.position.positionX])
+        if(this.mapArray[player.position.positionY][player.position.positionX] instanceof Weapon) {
+          console.log("Im on a weapon")
+        } else {
+          this.mapArray[player.position.positionY][player.position.positionX] = new Case();
+        }
+
+        this.playerPickNewWeapon(player, el.target);
+        
+        this.removeMoves();
+        $("#game-map").empty();
+        this.turn += 1;
+        this.playerTurn();
       }
     });
   }
