@@ -1,8 +1,6 @@
 // ------- MAP'S INITIALISATION -------
-
-// Variables
 const mapArray = [];
-const forbiddenCases = [];
+const forbiddenCasesArray = [];
 
 // Generate the two-dimensional array which represent the game's Map
 generateMap = (height, width) => {
@@ -26,11 +24,11 @@ getRandomPosition = (arrayPassed) => {
 generateDisabledCases = (numberOfDisabledCases) => {
   for(let i = 0; i < numberOfDisabledCases; i++) {
     const val = getRandomPosition(mapArray);
-    if (forbiddenCases.some(forbiddenItem => val.positionY === forbiddenItem.positionY && val.positionX === forbiddenItem.positionX)) {
+    if (forbiddenCasesArray.some(forbiddenItem => val.positionY === forbiddenItem.positionY && val.positionX === forbiddenItem.positionX)) {
       i--;
     } else {
       mapArray[val.positionY][val.positionX].state = "disabled";
-      forbiddenCases.push(val);
+      forbiddenCasesArray.push(val);
     }
   }
 }
@@ -38,13 +36,13 @@ generateDisabledCases = (numberOfDisabledCases) => {
 // Generate random position for a given item, take into account positions already taken
 generateItemPosition = (item, isRegistered) => {
   let val = getRandomPosition(mapArray);
-  if (forbiddenCases.some(forbiddenItem => val.positionY === forbiddenItem.positionY && val.positionX === forbiddenItem.positionX)) {
+  if (forbiddenCasesArray.some(forbiddenItem => val.positionY === forbiddenItem.positionY && val.positionX === forbiddenItem.positionX)) {
     return generateItemPosition(item, isRegistered);
   } else if (isRegistered == true) {
     item.position = {positionY: val.positionY, positionX: val.positionX};
     mapArray[val.positionY][val.positionX] = item;
     mapArray[val.positionY][val.positionX].state = item.name;
-    forbiddenCases.push(val);
+    forbiddenCasesArray.push(val);
     return val;
   } else {
     return val;
@@ -88,7 +86,7 @@ generatePlayer2Position = (playerItem) => {
     playerItem.position = {positionY: itemPosition.positionY, positionX: itemPosition.positionX};
     mapArray[itemPosition.positionY][itemPosition.positionX] = playerItem;
     mapArray[itemPosition.positionY][itemPosition.positionX].state = playerItem.name;
-    forbiddenCases.push(itemPosition);
+    forbiddenCasesArray.push(itemPosition);
   }
 }
 

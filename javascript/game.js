@@ -1,5 +1,4 @@
 // ------- THE GAME -------
-
 let turn = 0;
 
 // Check if a value is even
@@ -15,7 +14,7 @@ playerTurn = () => {
 playerMove = (player) => {
   checkMoves(player.position);
   generateCases();
-  test(player);
+  handlePlayerClick(player);
 }
 
 // Check which moves are availables
@@ -95,8 +94,8 @@ playerPickNewWeapon = (player, newWeapon) => {
   mapArray[newWeapon.dataset.y][newWeapon.dataset.x] = player.weapon;
   player.weapon = weaponPicked;
   player.position = {
-    positionY: parseInt(newWeapon.dataset.y), 
-    positionX: parseInt(newWeapon.dataset.x) 
+    positionY: +newWeapon.dataset.y, 
+    positionX: +newWeapon.dataset.x
   };
 }
 
@@ -107,16 +106,12 @@ prepareNewTurn = () => {
   playerTurn();
 }
 
-// When a Player click on new position, 
-test = (player) => {
+// On click, check Player's initial position & if he pick a new position || a new weapon
+handlePlayerClick = (player) => {
   $("#game-map").on("click", (el) => {
-    if(el.target.className == "move-available") {
+    if(el.target.className == "move-available" || el.target.className.includes("weapon-available")) {
       checkTypeOfPlayerPosition(player.position);
-      playerPickNewPosition(player, el.target);
-      prepareNewTurn();
-    } else if (el.target.className.includes("weapon-available")) {
-      checkTypeOfPlayerPosition(player.position);
-      playerPickNewWeapon(player, el.target);
+      el.target.className == "move-available" ? playerPickNewPosition(player, el.target) : el.target.className.includes("weapon-available") ? playerPickNewWeapon(player, el.target) : false;
       prepareNewTurn();
     }
   });
