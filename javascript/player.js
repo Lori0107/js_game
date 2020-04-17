@@ -3,7 +3,10 @@ class Player {
     this.name = name,
     this.life = life,
     this.totalMoves = 0,
-    this.position,
+    this.position = {
+      positionY: null,
+      positionX: null
+    },
     this.weapon
   }
 }
