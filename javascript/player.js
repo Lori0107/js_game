@@ -1,9 +1,10 @@
 class Player {
-  constructor(name, life, canPlay) {
+  constructor(name, life) {
     this.name = name,
     this.life = life,
-    this.canPlay = canPlay,
+    this.totalMoves = 0,
     this.position,
     this.weapon
   }
 }
+

@@ -1,8 +1,10 @@
 class Weapon {
-  constructor(name, damages, available) {
+  constructor(name, damages) {
     this.name = name,
     this.damages = damages,
-    this.available = false,
-    this.position
+    this.position = {
+      positionY: null,
+      positionX: null
+    }
   }
 }

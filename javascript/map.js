@@ -1,272 +1,109 @@
-class Map {
-  constructor(height, width) {
-    this.height = height,
-    this.width = width,
-    this.mapArray = [],
-    this.forbiddenCases = [],
-    this.weaponsArray = [],
-    this.turn = 0
-  }
+// ------- MAP'S INITIALISATION -------
 
-  // Generate the two-dimensional array which represent the game's Map
-  generateMap = () => {
-    for(let x = 0; x < this.height; x++) {
-      const lines = [];
-      this.mapArray.push(lines);
-      for(let y = 0; y < this.width; y++) {
-        lines.push(new Case());
-      };
-    };
-  }
+// Variables
+const mapArray = [];
+const forbiddenCases = [];
 
-  // Return random position coordinates
-  getRandomPosition = (arrayPassed) => {
-    const positionY = Math.floor(Math.random() * arrayPassed.length);
-    const positionX = Math.floor(Math.random() * arrayPassed.length);
-    return {positionY, positionX};
-  }
-
-  // Generate the disabled cases of the Map
-  generateDisabledCases = (numberOfDisabledCases) => {
-    for(let i = 0; i < numberOfDisabledCases; i++) {
-      const val = this.getRandomPosition(this.mapArray);
-      if (this.forbiddenCases.some(forbiddenItem => val.positionY === forbiddenItem.positionY && val.positionX === forbiddenItem.positionX)) {
-        i--;
-      } else {
-        this.mapArray[val.positionY][val.positionX].state = "disabled";
-        this.forbiddenCases.push(val);
-      }
+// Generate the two-dimensional array which represent the game's Map
+generateMap = (height, width) => {
+  for(let y = 0; y < height; y++) {
+    const lines = [];
+    mapArray.push(lines);
+    for(let x = 0; x < width; x++) {
+      lines.push(new Case());
     }
   }
+}
 
-  // Generate random position for a given item, take into account positions already taken
-  generateItemPosition = (item, isRegistered) => {
-    let val = this.getRandomPosition(this.mapArray);
-    if (this.forbiddenCases.some(forbiddenItem => val.positionY === forbiddenItem.positionY && val.positionX === forbiddenItem.positionX)) {
-      return this.generateItemPosition(item, isRegistered);
-    } else if (isRegistered == true) {
-      item.position = {positionY: val.positionY, positionX: val.positionX};
-      this.mapArray[val.positionY][val.positionX] = item;
-      this.mapArray[val.positionY][val.positionX].state = item.name;
-      this.forbiddenCases.push(val);
-      return val;
+// Return random coordinate's position
+getRandomPosition = (arrayPassed) => {
+  const positionY = Math.floor(Math.random() * arrayPassed.length);
+  const positionX = Math.floor(Math.random() * arrayPassed.length);
+  return { positionY, positionX };
+}
+
+// Generate the disabled cases of the Map
+generateDisabledCases = (numberOfDisabledCases) => {
+  for(let i = 0; i < numberOfDisabledCases; i++) {
+    const val = getRandomPosition(mapArray);
+    if (forbiddenCases.some(forbiddenItem => val.positionY === forbiddenItem.positionY && val.positionX === forbiddenItem.positionX)) {
+      i--;
     } else {
-      return val;
+      mapArray[val.positionY][val.positionX].state = "disabled";
+      forbiddenCases.push(val);
     }
   }
+}
 
-  // Generate weapons's positions
-  generateWeapons = () => {
-    this.weaponsArray.push(voodoo, sword, wand);
-    this.weaponsArray.forEach(weapon => this.generateItemPosition(weapon, true));
+// Generate random position for a given item, take into account positions already taken
+generateItemPosition = (item, isRegistered) => {
+  let val = getRandomPosition(mapArray);
+  if (forbiddenCases.some(forbiddenItem => val.positionY === forbiddenItem.positionY && val.positionX === forbiddenItem.positionX)) {
+    return generateItemPosition(item, isRegistered);
+  } else if (isRegistered == true) {
+    item.position = {positionY: val.positionY, positionX: val.positionX};
+    mapArray[val.positionY][val.positionX] = item;
+    mapArray[val.positionY][val.positionX].state = item.name;
+    forbiddenCases.push(val);
+    return val;
+  } else {
+    return val;
   }
+}
 
-  // Generate players's positions
-  generatePlayers = () => {
-    player1.weapon = broom;
-    broom.position = player1.position;
-    this.generateItemPosition(player1, true);
+// Generate weapons's positions
+generateWeaponsPosition = () => {
+  weaponsArray.forEach(weapon => generateItemPosition(weapon, true));
+}
 
-    player2.weapon = poison;
-    poison.position = player2.position;
-    this.generatePlayer2Position(player2);
+// Generate players's positions
+generatePlayersPosition = () => {
+  generateItemPosition(player1, true);
+  broom.position = { positionY: player1.position.positionY, positionX: player1.position.positionX };
+  generatePlayer2Position(player2);
+  poison.position = { positionY: player2.position.positionY, positionX: player2.position.positionX };
+}
+
+// Check if 2 items are side by side
+compareItemsPosition = (itemOne, itemTwo) => {
+  if (itemOne.positionX === itemTwo.positionX && itemOne.positionY === itemTwo.positionY || 
+      itemOne.positionX === itemTwo.positionX + 1 && itemOne.positionY === itemTwo.positionY ||
+      itemOne.positionX === itemTwo.positionX - 1  && itemOne.positionY === itemTwo.positionY ||
+      itemOne.positionX === itemTwo.positionX && itemOne.positionY === itemTwo.positionY + 1 ||
+      itemOne.positionX === itemTwo.positionX && itemOne.positionY === itemTwo.positionY - 1 ||
+      itemOne.positionX === itemTwo.positionX + 1 && itemOne.positionY === itemTwo.positionY + 1 ||
+      itemOne.positionX === itemTwo.positionX - 1 && itemOne.positionY === itemTwo.positionY - 1 ||
+      itemOne.positionX === itemTwo.positionX + 1 && itemOne.positionY === itemTwo.positionY - 1 ||
+      itemOne.positionX === itemTwo.positionX - 1 && itemOne.positionY === itemTwo.positionY + 1) {
+    return true;
+  } else return false;
+}
+
+// Generate Player2's position, check if is not near Player1
+generatePlayer2Position = (playerItem) => {
+  let itemPosition = generateItemPosition(playerItem, false);
+  if (compareItemsPosition(player1.position, itemPosition)) {
+    return generatePlayer2Position(playerItem);
+  } else {
+    playerItem.position = {positionY: itemPosition.positionY, positionX: itemPosition.positionX};
+    mapArray[itemPosition.positionY][itemPosition.positionX] = playerItem;
+    mapArray[itemPosition.positionY][itemPosition.positionX].state = playerItem.name;
+    forbiddenCases.push(itemPosition);
   }
+}
 
-  // Check if 2 items are side by side
-  compareItemsPosition = (itemOne, itemTwo) => {
-    if (itemOne.positionX === itemTwo.positionX && itemOne.positionY === itemTwo.positionY || 
-        itemOne.positionX === itemTwo.positionX + 1 && itemOne.positionY === itemTwo.positionY ||
-        itemOne.positionX === itemTwo.positionX - 1  && itemOne.positionY === itemTwo.positionY ||
-        itemOne.positionX === itemTwo.positionX && itemOne.positionY === itemTwo.positionY + 1 ||
-        itemOne.positionX === itemTwo.positionX && itemOne.positionY === itemTwo.positionY - 1 ||
-        itemOne.positionX === itemTwo.positionX + 1 && itemOne.positionY === itemTwo.positionY + 1 ||
-        itemOne.positionX === itemTwo.positionX - 1 && itemOne.positionY === itemTwo.positionY - 1 ||
-        itemOne.positionX === itemTwo.positionX + 1 && itemOne.positionY === itemTwo.positionY - 1 ||
-        itemOne.positionX === itemTwo.positionX - 1 && itemOne.positionY === itemTwo.positionY + 1) {
-      return true;
-    } else return false;
-  }
+// Handle each Map's item
+generateCases = () => {
+  mapArray.map(y => y.map(x => displayItems('#game-map', x.state.toLowerCase(), x.position.positionX, x.position.positionY)))
+}
 
-  // Generate Player 2's position, check if is not near Player 1
-  generatePlayer2Position = (playerItem) => {
-    let itemPosition = this.generateItemPosition(playerItem, false);
-    if (this.compareItemsPosition(player1.position, itemPosition)) {
-      return this.generatePlayer2Position(playerItem);
-    } else {
-      playerItem.position = {positionY: itemPosition.positionY, positionX: itemPosition.positionX};
-      this.mapArray[itemPosition.positionY][itemPosition.positionX] = playerItem;
-      this.mapArray[itemPosition.positionY][itemPosition.positionX].state = playerItem.name;
-      this.forbiddenCases.push(itemPosition);
-    }
-  }
+// Generate a div for each Map's item
+displayItems = (map, customClass, customPositionX, customPositionY) => {
+  $(map).append('<div class="'+ customClass +'" data-x="' + customPositionX + '" data-y="' + customPositionY + '"></div>');
+}
 
-  // Generate a div for each item of the game's Map
-  displayItems = (map, customClass, customPositionX, customPositionY) => {
-    $(map).append('<div class="'+ customClass +'" data-position-x="' + customPositionX + '" data-position-y="' + customPositionY + '"></div>');
-  }
-
-  // Generate each Map's cases
-  generateCases = () => {
-    this.mapArray.map(y => y.map(x => this.displayItems('#game-map', x.state.toLowerCase(), x.positionX, x.positionY)))
-  }
-
-  // Check if a value is even
-  isEven = (value) => value%2 === 0;
-
-  // Determine which player can play
-  playerTurn = () => {
-    // player1.canPlay = this.isEven(this.turn);
-    // player2.canPlay = !this.isEven(this.turn);
-    $("#game-map").off("click");
-    this.playerMove(this.isEven(this.turn) ? player1 : player2);
-  }
-
-  // Handle the player's move
-  playerMove = (player) => {
-    this.showMoves(player.position);
-    this.generateCases();
-    this.test(player);
-  }
-
-  // Show the moves availables
-  showMoves = (position) => {
-    const up = [
-      [position.positionY - 1, position.positionX],
-      [position.positionY - 2, position.positionX],
-      [position.positionY - 3, position.positionX],
-    ];
-    const down = [
-      [position.positionY + 1, position.positionX],
-      [position.positionY + 2, position.positionX],
-      [position.positionY + 3, position.positionX],
-    ];
-    const right = [
-      [position.positionY, position.positionX + 1],
-      [position.positionY, position.positionX + 2],
-      [position.positionY, position.positionX + 3],
-    ];
-    const left = [
-      [position.positionY, position.positionX - 1],
-      [position.positionY, position.positionX - 2],
-      [position.positionY, position.positionX - 3],
-    ];
-
-    this.checkMoves(up);
-    this.checkMoves(down);
-    this.checkMoves(right);
-    this.checkMoves(left);
-  }
-  
-  // Check which moves are availables
-  checkMoves = (moves) => {
-    moves.some(move => {
-      if(move[0] < 0 || 
-        move[1] < 0 || 
-        move[0] > 9 || 
-        move[1] > 9 || 
-        this.mapArray[move[0]][move[1]].state == "disabled" || 
-        this.mapArray[move[0]][move[1]].name === player1.name ||
-        this.mapArray[move[0]][move[1]].name === player2.name) {
-        return true;
-      } else if (this.mapArray[move[0]][move[1]].constructor.name == "Weapon") {
-        this.mapArray[move[0]][move[1]].state += " weapon-available";
-        this.mapArray[move[0]][move[1]].available = true;
-        this.mapArray[move[0]][move[1]].positionY = move[0];
-        this.mapArray[move[0]][move[1]].positionX = move[1];
-      } else {
-        this.mapArray[move[0]][move[1]].state = "move-available";
-        this.mapArray[move[0]][move[1]].positionY = move[0];
-        this.mapArray[move[0]][move[1]].positionX = move[1];
-      };
-    });
-  }
-
-  // Remove the available moves for a player
-  removeMoves = () => {
-    this.mapArray.map(y => {
-      y.map(x => {
-        if (x.state == "move-available") {
-          x.state = "empty";
-        } else if (x.constructor.name == "Weapon") {
-          x.state = x.name
-          x.available = false;
-        }
-      })
-    })
-  }
-
-  // Check if the player is on the case where he left his old weapon
-  checkTypeOfPlayerPosition = (playerPosition) => {
-    // playerPosition instanceof Weapon ? console.log('im on weapon') : playerPosition = new Case()
-    console.log("pass here")
-    if(playerPosition instanceof Weapon) {
-      console.log("Im on a weapon")
-    } else {
-      console.log("pass here 2")
-      playerPosition = new Case();
-      console.log(playerPosition)
-    }
-  }
-
-  // Handle the player's position change
-  playerPickNewPosition = (player, newPosition) => {
-    this.mapArray[newPosition.dataset.positionY][newPosition.dataset.positionX] = player;
-    player.position.positionY = parseInt(newPosition.dataset.positionY);
-    player.position.positionX = parseInt(newPosition.dataset.positionX);
-  }
-
-  // Handle the player's weapon change
-  playerPickNewWeapon = (player, newWeapon) => {
-    let w = this.mapArray[newWeapon.dataset.positionY][newWeapon.dataset.positionX];
-    this.mapArray[newWeapon.dataset.positionY][newWeapon.dataset.positionX] = player.weapon;
-    player.weapon = w;
-    player.position.positionY = parseInt(newWeapon.dataset.positionY);
-    player.position.positionX = parseInt(newWeapon.dataset.positionX);
-  }
-
-  // Handle the player's new position on the Map & increment the turn
-  test = (player) => {
-    $("#game-map").on("click", (el) => {
-      if(el.target.className == "move-available") {
-        //this.checkTypeOfPlayerPosition(this.mapArray[player.position.positionY][player.position.positionX])
-        
-        if(this.mapArray[player.position.positionY][player.position.positionX] instanceof Weapon) {
-          console.log("Im on a weapon")
-        } else {
-          this.mapArray[player.position.positionY][player.position.positionX] = new Case();
-        }
-
-        this.playerPickNewPosition(player, el.target);
-        
-        this.removeMoves();
-        $("#game-map").empty();
-        this.turn += 1;
-        this.playerTurn();
-
-
-      } else if (el.target.className.includes("weapon-available")) {
-        //this.checkTypeOfPlayerPosition(this.mapArray[player.position.positionY][player.position.positionX])
-        if(this.mapArray[player.position.positionY][player.position.positionX] instanceof Weapon) {
-          console.log("Im on a weapon")
-        } else {
-          this.mapArray[player.position.positionY][player.position.positionX] = new Case();
-        }
-
-        this.playerPickNewWeapon(player, el.target);
-        
-        this.removeMoves();
-        $("#game-map").empty();
-        this.turn += 1;
-        this.playerTurn();
-      }
-    });
-  }
-};
-
-const myMap = new Map(10, 10);
-myMap.generateMap();
-myMap.generateDisabledCases(7);
-myMap.generateWeapons();
-myMap.generatePlayers();
-myMap.playerTurn();
-//myMap.generateCases();
+generateMap(10, 10);
+generateDisabledCases(7);
+generateWeaponsPosition();
+generatePlayersPosition();
+playerTurn();
