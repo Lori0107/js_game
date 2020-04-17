@@ -109,9 +109,10 @@ prepareNewTurn = () => {
 // On click, check Player's initial position & if he pick a new position || a new weapon
 handlePlayerClick = (player) => {
   $("#game-map").on("click", (el) => {
-    if(el.target.className == "move-available" || el.target.className.includes("weapon-available")) {
+    const elClass = el.target.className;
+    if(elClass == "move-available" || elClass.includes("weapon-available")) {
       checkTypeOfPlayerPosition(player.position);
-      el.target.className == "move-available" ? playerPickNewPosition(player, el.target) : el.target.className.includes("weapon-available") ? playerPickNewWeapon(player, el.target) : false;
+      elClass == "move-available" ? playerPickNewPosition(player, el.target) : elClass.includes("weapon-available") ? playerPickNewWeapon(player, el.target) : false;
       prepareNewTurn();
     }
   });
