@@ -1,119 +1,34 @@
-// ------- THE GAME -------
-let turn = 0;
+const mapArray = [];
+const forbiddenCasesArray = [];
 
-// Check if a value is even
-isEven = (value) => value%2 === 0;
+initGame = () => {
+  // Weapons's instanciations
+  const broom = new Weapon("Broom", 10);
+  const poison = new Weapon("Poison", 10);
+  const voodoo = new Weapon("Voodoo", 20);
+  const sword = new Weapon("Sword", 20);
+  const wand = new Weapon("Wand", 30);
 
-// Determine which player can play
-playerTurn = () => {
-  $("#game-map").off("click");
-  playerMove(isEven(turn) ? player1 : player2);
-}
+  const weapons = [ voodoo, sword, wand ];
 
-// Handle the player's move
-playerMove = (player) => {
-  checkMoves(player.position);
-  generateCases();
-  handlePlayerClick(player);
-}
+  // Players's instanciations
+  const player1 = new Player("Player1", 100, broom);
+  const player2 = new Player("Player2", 100, poison);
+  const players = [ player1, player2 ];
 
-// Check which moves are availables
-checkMoves = (position) => {
-  const up = [
-    [position.positionY - 1, position.positionX],
-    [position.positionY - 2, position.positionX],
-    [position.positionY - 3, position.positionX],
-  ];
-  const down = [
-    [position.positionY + 1, position.positionX],
-    [position.positionY + 2, position.positionX],
-    [position.positionY + 3, position.positionX],
-  ];
-  const right = [
-    [position.positionY, position.positionX + 1],
-    [position.positionY, position.positionX + 2],
-    [position.positionY, position.positionX + 3],
-  ];
-  const left = [
-    [position.positionY, position.positionX - 1],
-    [position.positionY, position.positionX - 2],
-    [position.positionY, position.positionX - 3],
-  ];
-  showMoves(up);
-  showMoves(down);
-  showMoves(right);
-  showMoves(left);
-}
-
-// Show the moves availables
-showMoves = (moves) => {
-  moves.some(move => {
-    if(move[0] < 0 || 
-      move[1] < 0 || 
-      move[0] > 9 || 
-      move[1] > 9 || 
-      mapArray[move[0]][move[1]].state == "disabled" || 
-      mapArray[move[0]][move[1]] instanceof Player) {
-      return true;
-    } else if (mapArray[move[0]][move[1]] instanceof Weapon) {
-      mapArray[move[0]][move[1]].state += " weapon-available";
-      mapArray[move[0]][move[1]].position = { positionY: move[0], positionX: move[1] };
-    } else {
-      mapArray[move[0]][move[1]].state = "move-available";
-      mapArray[move[0]][move[1]].position = { positionY: move[0], positionX: move[1] };
-    };
+  // Map's instanciations
+  const map = new Map(10, 10, player1, player2, weapons);
+  
+  map.generateMap();
+  map.generateDisabledCases(7);
+  map.generateWeaponsPosition();
+  map.generatePlayersPosition();
+  players.map(player => {
+    player.assignPositionToWeapon();
   });
+  map.playerTurn();
 }
 
-// Remove the player's available moves
-removeMoves = () => {
-  mapArray.map(y => {
-    y.map(x => {
-      x.state == "move-available" ? x.state = "empty" : x.constructor.name == "Weapon" ? x.state = x.name : false;
-    })
-  })
-}
-
-// Check if the player is on the case where he left his old weapon
-checkTypeOfPlayerPosition = (position) => {
-  mapArray[position.positionY][position.positionX] instanceof Weapon ? true : mapArray[position.positionY][position.positionX] = new Case();
-}
-
-// Handle the new player's position
-playerPickNewPosition = (player, newPosition) => {
-  mapArray[newPosition.dataset.y][newPosition.dataset.x] = player;
-  player.position = { 
-    positionY: +newPosition.dataset.y, 
-    positionX: +newPosition.dataset.x 
-  };
-}
-
-// Handle the player's weapon change
-playerPickNewWeapon = (player, newWeapon) => {
-  let weaponPicked = mapArray[newWeapon.dataset.y][newWeapon.dataset.x];
-  mapArray[newWeapon.dataset.y][newWeapon.dataset.x] = player.weapon;
-  player.weapon = weaponPicked;
-  player.position = {
-    positionY: +newWeapon.dataset.y, 
-    positionX: +newWeapon.dataset.x
-  };
-}
-
-prepareNewTurn = () => {
-  removeMoves();
-  $("#game-map").empty();
-  turn += 1;
-  playerTurn();
-}
-
-// On click, check Player's initial position & if he pick a new position || a new weapon
-handlePlayerClick = (player) => {
-  $("#game-map").on("click", (el) => {
-    const elClass = el.target.className;
-    if(elClass == "move-available" || elClass.includes("weapon-available")) {
-      checkTypeOfPlayerPosition(player.position);
-      elClass == "move-available" ? playerPickNewPosition(player, el.target) : elClass.includes("weapon-available") ? playerPickNewWeapon(player, el.target) : false;
-      prepareNewTurn();
-    }
-  });
-}
+$(document).ready(function() {
+  initGame();
+});

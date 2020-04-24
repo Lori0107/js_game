@@ -1,13 +1,15 @@
 class Player {
-  constructor(name, life) {
+  constructor(name, life, weapon) {
     this.name = name,
     this.life = life,
-    this.totalMoves = 0,
     this.position = {
       positionY: null,
       positionX: null
     },
-    this.weapon
+    this.weapon = weapon
+  }
+
+  assignPositionToWeapon() {
+    this.weapon.position = this.position;
   }
 }
-
