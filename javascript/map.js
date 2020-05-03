@@ -65,6 +65,7 @@ class Map {
   }
 
   // Check if 2 items are side by side
+  // return seulement la condition
   compareItemsPosition = (itemOne, itemTwo) => {
     if (itemOne.positionX === itemTwo.positionX && itemOne.positionY === itemTwo.positionY || 
         itemOne.positionX === itemTwo.positionX + 1 && itemOne.positionY === itemTwo.positionY ||
@@ -175,26 +176,37 @@ class Map {
     })
   }
 
-  checkWay(playerPosition, targetPosition) {
-    console.log("player y: ", playerPosition.positionY, "player x: ", playerPosition.positionX);
-    console.log("target y: ", targetPosition.y, "target x: ", targetPosition.x);
-    if(playerPosition.positionY == targetPosition.y) {
-      if(targetPosition.x > playerPosition.positionX) {
-        console.log("target greater than player");
-        do {
-          targetPosition.x --;
-          console.log(targetPosition.x);
-          console.log(mapArray[targetPosition.y][targetPosition.x]);
-        } while (targetPosition.x > playerPosition.positionX);
-      } else {
-        console.log("target lower than player");
-        do {
-          targetPosition.x ++;
-          console.log(targetPosition.x);
-          console.log(mapArray[targetPosition.y][targetPosition.x]);
-        } while (targetPosition.x < playerPosition.positionX);
-      }
+  //checker case par case juqu'à la target
+  checkXWay(player, playerPosition, targetPosition) {
+    if(targetPosition.x > playerPosition.positionX) {
+      do {
+        playerPosition.positionX++;
+        mapArray[playerPosition.positionY][playerPosition.positionX] instanceof Weapon ? this.playerPickNewWeapon(player) : console.log("No weapon on the way");
+      } while (targetPosition.x > playerPosition.positionX);
+    } else {
+      do {
+        playerPosition.positionX--;
+        mapArray[playerPosition.positionY][playerPosition.positionX] instanceof Weapon ? this.playerPickNewWeapon(player) : console.log("No weapon on the way");
+      } while (targetPosition.x < playerPosition.positionX);
     }
+  }
+
+  checkYWay(player, playerPosition, targetPosition) {
+    if(targetPosition.y > playerPosition.positionY) {
+      do {
+        playerPosition.positionY++;
+        mapArray[playerPosition.positionY][playerPosition.positionX] instanceof Weapon ? this.playerPickNewWeapon(player) : console.log("No weapon on the way");
+      } while (targetPosition.y > playerPosition.positionY);
+    } else {
+      do {
+        playerPosition.positionY--;
+        mapArray[playerPosition.positionY][playerPosition.positionX] instanceof Weapon ? this.playerPickNewWeapon(player) : console.log("No weapon on the way");
+      } while (targetPosition.y < playerPosition.positionY);
+    }
+  }
+
+  checkWay(player, playerPosition, targetPosition) {
+    playerPosition.positionY == targetPosition.y ? this.checkXWay(player, playerPosition, targetPosition) : this.checkYWay(player, playerPosition, targetPosition);
   }
 
   // Check if the player is on the case where he left his old weapon
@@ -202,46 +214,81 @@ class Map {
     mapArray[position.positionY][position.positionX] instanceof Weapon ? true : mapArray[position.positionY][position.positionX] = new Case();
   }
 
+  playerPickWeaponWay = (player, newWeapon) => {
+    let weaponPicked = mapArray[newWeapon.y][newWeapon.x];
+    mapArray[newWeapon.y][newWeapon.x] = player.weapon;
+    player.weapon = weaponPicked;
+  }
+
   // Handle the new player's position
-  playerPickNewPosition = (player, newPosition) => {
-    mapArray[newPosition.dataset.y][newPosition.dataset.x] = player;
-    player.position = { 
-      positionY: +newPosition.dataset.y, 
-      positionX: +newPosition.dataset.x 
-    };
+  playerPickNewPosition = (player) => {
+    mapArray[player.position.positionY][player.position.positionX] = player;
   }
 
   // Handle the player's weapon change
-  playerPickNewWeapon = (player, newWeapon) => {
-    let weaponPicked = mapArray[newWeapon.dataset.y][newWeapon.dataset.x];
-    mapArray[newWeapon.dataset.y][newWeapon.dataset.x] = player.weapon;
+  playerPickNewWeapon = (player) => {
+    const y = player.position.positionY;
+    const x = player.position.positionX;
+    const weaponPicked = mapArray[y][x];
+    
+    mapArray[y][x] = player.weapon;
     player.weapon = weaponPicked;
-    player.position = {
-      positionY: +newWeapon.dataset.y, 
-      positionX: +newWeapon.dataset.x
-    };
+    
+    
+    
+    //mapArray[playerPos.positonY][playerPos.positonX] = player.weapon;
+    //player.weapon = weaponPicked;
+    
+    // let weaponPicked = mapArray[newWeapon.dataset.y][newWeapon.dataset.x];
+    // mapArray[newWeapon.dataset.y][newWeapon.dataset.x] = player.weapon;
+    // player.weapon = weaponPicked;
+
+    //this.playerPickNewPosition(player);
+    // player.position = { 
+    //   positionY: +newWeapon.dataset.y,
+    //   positionX: +newWeapon.dataset.x
+    // };
   }
 
   clearMap = () => {
     $("#game-map").empty();
   }
 
-  prepareNewTurn = () => {
+  initNewTurn = () => {
     this.removeMoves();
     this.clearMap();
     this.turn += 1;
     this.playerTurn();
   }
 
+  checkPlayerAround(playerPosition) {
+    if( mapArray[playerPosition.positionY + 1][playerPosition.positionX] instanceof Player||
+        mapArray[playerPosition.positionY - 1][playerPosition.positionX] instanceof Player||
+        mapArray[playerPosition.positionY][playerPosition.positionX + 1] instanceof Player||
+        mapArray[playerPosition.positionY][playerPosition.positionX - 1] instanceof Player) {
+      return true;
+    }
+  }
+
+  initBattle() {
+    console.log("Battle")
+    this.removeMoves();
+    this.clearMap();
+    this.turn += 1;
+    this.generateCases();
+  }
+
   // On click, check Player's initial position & if he pick a new position || a new weapon
   handlePlayerClick = (player) => {
     $("#game-map").on("click", (el) => {
       const elClass = el.target.className;
-      if(elClass == "move-available" || elClass.includes("weapon-available")) {
-        this.checkWay(player.position, el.target.dataset)
-        // this.checkTypeOfPlayerPosition(player.position);
-        // elClass == "move-available" ? this.playerPickNewPosition(player, el.target) : elClass.includes("weapon-available") ? this.playerPickNewWeapon(player, el.target) : false;
-        // this.prepareNewTurn();
+      if(elClass === "move-available" || elClass.includes("weapon-available")) {
+        this.checkTypeOfPlayerPosition(player.position);
+        this.checkWay(player, player.position, el.target.dataset);
+        this.playerPickNewPosition(player);
+        //elClass === "move-available" ? this.playerPickNewPosition(player, el.target) : elClass.includes("weapon-available") ? this.playerPickNewWeapon(player, el.target) : false;
+        //this.checkPlayerAround(player) ? this.initBattle() : this.initNewTurn();
+        this.initNewTurn();
       }
     });
   }
