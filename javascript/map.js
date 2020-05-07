@@ -16,7 +16,7 @@ class Map {
       const lines = [];
       mapArray.push(lines);
       for(let x = 0; x < this.width; x++) {
-        lines.push(new Case());
+        lines.push([new Case()]);
       }
     }
   }
@@ -32,7 +32,7 @@ class Map {
   generateDisabledCases = (disabledCases) => {
     for(let i = 0; i < disabledCases; i++) {
       const val = this.getRandomPosition(mapArray);
-      mapArray[val.positionY][val.positionX].state = "disabled";
+      mapArray[val.positionY][val.positionX][0].state = "disabled";
       forbiddenCasesArray.push(val);
     }
   }
@@ -44,8 +44,8 @@ class Map {
       return this.generateItemPosition(item, isRegistered);
     } else if (isRegistered == true) {
       item.position = {positionY: val.positionY, positionX: val.positionX};
-      mapArray[val.positionY][val.positionX] = item;
-      mapArray[val.positionY][val.positionX].state = item.name;
+      mapArray[val.positionY][val.positionX][0] = item;
+      mapArray[val.positionY][val.positionX][0].state = item.name;
       forbiddenCasesArray.push(val);
       return val;
     } else {
@@ -87,15 +87,15 @@ class Map {
       return this.generatesecondPlayerPosition(playerItem);
     } else {
       playerItem.position = {positionY: itemPosition.positionY, positionX: itemPosition.positionX};
-      mapArray[itemPosition.positionY][itemPosition.positionX] = playerItem;
-      mapArray[itemPosition.positionY][itemPosition.positionX].state = playerItem.name;
+      mapArray[itemPosition.positionY][itemPosition.positionX][0] = playerItem;
+      mapArray[itemPosition.positionY][itemPosition.positionX][0].state = playerItem.name;
       forbiddenCasesArray.push(itemPosition);
     }
   }
 
   // Handle each Map's item
   generateCases = () => {
-    mapArray.map(y => y.map(x => this.displayItems('#game-map', x.state.toLowerCase(), x.position.positionX, x.position.positionY)))
+    mapArray.map(y => y.map(x => this.displayItems('#game-map', x[0].state.toLowerCase(), x[0].position.positionX, x[0].position.positionY)))
   }
 
   // Generate a div for each Map's item
@@ -154,15 +154,15 @@ class Map {
         move[1] < 0 || 
         move[0] > 9 || 
         move[1] > 9 || 
-        mapArray[move[0]][move[1]].state == "disabled" || 
-        mapArray[move[0]][move[1]] instanceof Player) {
+        mapArray[move[0]][move[1]][0].state == "disabled" || 
+        mapArray[move[0]][move[1]][0] instanceof Player) {
         return true;
-      } else if (mapArray[move[0]][move[1]] instanceof Weapon) {
-        mapArray[move[0]][move[1]].state += " weapon-available";
-        mapArray[move[0]][move[1]].position = { positionY: move[0], positionX: move[1] };
+      } else if (mapArray[move[0]][move[1]][0] instanceof Weapon) {
+        mapArray[move[0]][move[1]][0].state += " weapon-available";
+        mapArray[move[0]][move[1]][0].position = { positionY: move[0], positionX: move[1] };
       } else {
-        mapArray[move[0]][move[1]].state = "move-available";
-        mapArray[move[0]][move[1]].position = { positionY: move[0], positionX: move[1] };
+        mapArray[move[0]][move[1]][0].state = "move-available";
+        mapArray[move[0]][move[1]][0].position = { positionY: move[0], positionX: move[1] };
       };
     });
   }
@@ -171,7 +171,7 @@ class Map {
   removeMoves = () => {
     mapArray.map(y => {
       y.map(x => {
-        x.state == "move-available" ? x.state = "empty" : x.constructor.name == "Weapon" ? x.state = x.name : false;
+        x[0].state == "move-available" ? x[0].state = "empty" : x[0].constructor.name == "Weapon" ? x[0].state = x[0].name : false;
       })
     })
   }
@@ -181,12 +181,12 @@ class Map {
     if(targetPosition.x > playerPosition.positionX) {
       do {
         playerPosition.positionX++;
-        mapArray[playerPosition.positionY][playerPosition.positionX] instanceof Weapon ? this.playerPickNewWeapon(player) : console.log("No weapon on the way");
+        if(mapArray[playerPosition.positionY][playerPosition.positionX][0] instanceof Weapon) this.playerPickNewWeapon(player);
       } while (targetPosition.x > playerPosition.positionX);
     } else {
       do {
         playerPosition.positionX--;
-        mapArray[playerPosition.positionY][playerPosition.positionX] instanceof Weapon ? this.playerPickNewWeapon(player) : console.log("No weapon on the way");
+        if(mapArray[playerPosition.positionY][playerPosition.positionX][0] instanceof Weapon) this.playerPickNewWeapon(player);
       } while (targetPosition.x < playerPosition.positionX);
     }
   }
@@ -195,12 +195,12 @@ class Map {
     if(targetPosition.y > playerPosition.positionY) {
       do {
         playerPosition.positionY++;
-        mapArray[playerPosition.positionY][playerPosition.positionX] instanceof Weapon ? this.playerPickNewWeapon(player) : console.log("No weapon on the way");
+        if(mapArray[playerPosition.positionY][playerPosition.positionX][0] instanceof Weapon) this.playerPickNewWeapon(player);
       } while (targetPosition.y > playerPosition.positionY);
     } else {
       do {
         playerPosition.positionY--;
-        mapArray[playerPosition.positionY][playerPosition.positionX] instanceof Weapon ? this.playerPickNewWeapon(player) : console.log("No weapon on the way");
+        if(mapArray[playerPosition.positionY][playerPosition.positionX][0] instanceof Weapon) this.playerPickNewWeapon(player);
       } while (targetPosition.y < playerPosition.positionY);
     }
   }
@@ -211,43 +211,28 @@ class Map {
 
   // Check if the player is on the case where he left his old weapon
   checkTypeOfPlayerPosition = (position) => {
-    mapArray[position.positionY][position.positionX] instanceof Weapon ? true : mapArray[position.positionY][position.positionX] = new Case();
+    mapArray[position.positionY][position.positionX].length > 1 ? mapArray[position.positionY][position.positionX].splice(0, 1) : mapArray[position.positionY][position.positionX][0] = new Case();
   }
 
   playerPickWeaponWay = (player, newWeapon) => {
-    let weaponPicked = mapArray[newWeapon.y][newWeapon.x];
-    mapArray[newWeapon.y][newWeapon.x] = player.weapon;
+    let weaponPicked = mapArray[newWeapon.y][newWeapon.x][0];
+    mapArray[newWeapon.y][newWeapon.x][0] = player.weapon;
     player.weapon = weaponPicked;
   }
 
   // Handle the new player's position
   playerPickNewPosition = (player) => {
-    mapArray[player.position.positionY][player.position.positionX] = player;
+    mapArray[player.position.positionY][player.position.positionX].unshift(player);
   }
 
   // Handle the player's weapon change
   playerPickNewWeapon = (player) => {
     const y = player.position.positionY;
     const x = player.position.positionX;
-    const weaponPicked = mapArray[y][x];
+    const weaponPicked = mapArray[y][x][0];
     
-    mapArray[y][x] = player.weapon;
+    mapArray[y][x][0] = player.weapon;
     player.weapon = weaponPicked;
-    
-    
-    
-    //mapArray[playerPos.positonY][playerPos.positonX] = player.weapon;
-    //player.weapon = weaponPicked;
-    
-    // let weaponPicked = mapArray[newWeapon.dataset.y][newWeapon.dataset.x];
-    // mapArray[newWeapon.dataset.y][newWeapon.dataset.x] = player.weapon;
-    // player.weapon = weaponPicked;
-
-    //this.playerPickNewPosition(player);
-    // player.position = { 
-    //   positionY: +newWeapon.dataset.y,
-    //   positionX: +newWeapon.dataset.x
-    // };
   }
 
   clearMap = () => {
@@ -260,14 +245,18 @@ class Map {
     this.turn += 1;
     this.playerTurn();
   }
+  
 
-  checkPlayerAround(playerPosition) {
-    if( mapArray[playerPosition.positionY + 1][playerPosition.positionX] instanceof Player||
-        mapArray[playerPosition.positionY - 1][playerPosition.positionX] instanceof Player||
-        mapArray[playerPosition.positionY][playerPosition.positionX + 1] instanceof Player||
-        mapArray[playerPosition.positionY][playerPosition.positionX - 1] instanceof Player) {
-      return true;
-    }
+  checkPlayerAround() {
+    // return (this.firstPlayer.position: {positionY + 1, positionX} == this.secondPlayer.position[positionY + 1][positionX] ||
+    //         this.firstPlayer.position[positionY - 1][positionX] == this.secondPlayer.position[positionY + 1][positionX] ||
+    //         this.firstPlayer.position[positionY][positionX + 1] == this.secondPlayer.position[positionY + 1][positionX] ||
+    //         this.firstPlayer.position[positionY][positionX - 1] == this.secondPlayer.position[positionY + 1][positionX])
+
+    // mapArray[playerPosition.positionY + 1][playerPosition.positionX][0] instanceof Player||
+    // mapArray[playerPosition.positionY - 1][playerPosition.positionX][0] instanceof Player||
+    // mapArray[playerPosition.positionY][playerPosition.positionX + 1][0] instanceof Player||
+    // mapArray[playerPosition.positionY][playerPosition.positionX - 1][0] instanceof Player
   }
 
   initBattle() {
@@ -286,8 +275,7 @@ class Map {
         this.checkTypeOfPlayerPosition(player.position);
         this.checkWay(player, player.position, el.target.dataset);
         this.playerPickNewPosition(player);
-        //elClass === "move-available" ? this.playerPickNewPosition(player, el.target) : elClass.includes("weapon-available") ? this.playerPickNewWeapon(player, el.target) : false;
-        //this.checkPlayerAround(player) ? this.initBattle() : this.initNewTurn();
+        //this.checkPlayerAround() ? this.initBattle() : this.initNewTurn();
         this.initNewTurn();
       }
     });
