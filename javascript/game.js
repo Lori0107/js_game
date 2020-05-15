@@ -1,5 +1,6 @@
 const mapArray = [];
 const forbiddenCasesArray = [];
+let turn = 0;
 
 // Weapons's instanciations
 const broom = new Weapon("Broom", 10);
@@ -18,7 +19,7 @@ const players = [ player1, player2 ];
 // Map's instanciations
 const map = new Map(10, 10, player1, player2, weapons);
 
-initGame = () => {  
+initGame = () => {
   map.generateMap();
   map.generateDisabledCases(7);
   map.generateWeaponsPosition();

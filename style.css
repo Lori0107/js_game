@@ -85,3 +85,11 @@
   background-size: cover;
   border: 0.3px solid #ffffff;
 }
+
+#choiceModal {
+  visibility: hidden;
+}
+
+#restartModal {
+  visibility: hidden;
+}

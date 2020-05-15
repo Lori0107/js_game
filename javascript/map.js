@@ -7,7 +7,8 @@ class Map {
     //this.mapArray = [],
     //forbiddenCasesArray = [],
     this.weaponsArray = weaponsArray,
-    this.turn = 0
+    this.turn = 0,
+    this.isBattle = false
   }
 
   // Generate the two-dimensional array which represent the game's Map
@@ -108,8 +109,10 @@ class Map {
 
   // Determine which player can play
   playerTurn = () => {
-    $("#game-map").off("click");
-    this.playerMove(this.isEven(this.turn) ? this.firstPlayer : this.secondPlayer);
+    let player = this.isEven(this.turn) ? this.firstPlayer : this.secondPlayer;
+    this.isBattle ?
+      this.playerAttack(player) :
+      this.playerMove(player);
   }
 
   // Handle the player's move
@@ -152,8 +155,8 @@ class Map {
     moves.some(move => {
       if(move[0] < 0 || 
         move[1] < 0 || 
-        move[0] > 9 || 
-        move[1] > 9 || 
+        move[0] > this.height-1 || 
+        move[1] > this.height-1 || 
         mapArray[move[0]][move[1]][0].state == "disabled" || 
         mapArray[move[0]][move[1]][0] instanceof Player) {
         return true;
@@ -171,7 +174,11 @@ class Map {
   removeMoves = () => {
     mapArray.map(y => {
       y.map(x => {
-        x[0].state == "move-available" ? x[0].state = "empty" : x[0].constructor.name == "Weapon" ? x[0].state = x[0].name : false;
+        x[0].state == "move-available" ? 
+          x[0].state = "empty" :
+          x[0].constructor.name == "Weapon" ? 
+            x[0].state = x[0].name :
+            false;
       })
     })
   }
@@ -206,12 +213,16 @@ class Map {
   }
 
   checkWay(player, playerPosition, targetPosition) {
-    playerPosition.positionY == targetPosition.y ? this.checkXWay(player, playerPosition, targetPosition) : this.checkYWay(player, playerPosition, targetPosition);
+    playerPosition.positionY == targetPosition.y ? 
+      this.checkXWay(player, playerPosition, targetPosition) : 
+      this.checkYWay(player, playerPosition, targetPosition);
   }
 
-  // Check if the player is on the case where he left his old weapon
+  // Useful in case there is a weapon on the player's position
   checkTypeOfPlayerPosition = (position) => {
-    mapArray[position.positionY][position.positionX].length > 1 ? mapArray[position.positionY][position.positionX].splice(0, 1) : mapArray[position.positionY][position.positionX][0] = new Case();
+    mapArray[position.positionY][position.positionX].length > 1 ? 
+      mapArray[position.positionY][position.positionX].splice(0, 1) : 
+      mapArray[position.positionY][position.positionX][0] = new Case();
   }
 
   playerPickWeaponWay = (player, newWeapon) => {
@@ -230,7 +241,6 @@ class Map {
     const y = player.position.positionY;
     const x = player.position.positionX;
     const weaponPicked = mapArray[y][x][0];
-    
     mapArray[y][x][0] = player.weapon;
     player.weapon = weaponPicked;
   }
@@ -245,38 +255,85 @@ class Map {
     this.turn += 1;
     this.playerTurn();
   }
-  
-
-  checkPlayerAround() {
-    // return (this.firstPlayer.position: {positionY + 1, positionX} == this.secondPlayer.position[positionY + 1][positionX] ||
-    //         this.firstPlayer.position[positionY - 1][positionX] == this.secondPlayer.position[positionY + 1][positionX] ||
-    //         this.firstPlayer.position[positionY][positionX + 1] == this.secondPlayer.position[positionY + 1][positionX] ||
-    //         this.firstPlayer.position[positionY][positionX - 1] == this.secondPlayer.position[positionY + 1][positionX])
-
-    // mapArray[playerPosition.positionY + 1][playerPosition.positionX][0] instanceof Player||
-    // mapArray[playerPosition.positionY - 1][playerPosition.positionX][0] instanceof Player||
-    // mapArray[playerPosition.positionY][playerPosition.positionX + 1][0] instanceof Player||
-    // mapArray[playerPosition.positionY][playerPosition.positionX - 1][0] instanceof Player
-  }
 
   initBattle() {
-    console.log("Battle")
     this.removeMoves();
     this.clearMap();
-    this.turn += 1;
+    this.isBattle = true;
     this.generateCases();
+    this.playerTurn();
   }
 
-  // On click, check Player's initial position & if he pick a new position || a new weapon
+  checkPlayerAround(playerPosition) {
+    return  this.test(playerPosition.positionY + 1, playerPosition.positionX) ||
+            this.test(playerPosition.positionY - 1, playerPosition.positionX) ||
+            this.test(playerPosition.positionY, playerPosition.positionX + 1) ||
+            this.test(playerPosition.positionY, playerPosition.positionX - 1)
+  }
+
+  test(positionY, positionX) {
+    if(positionY < 0 || positionY > this.height-1 || positionX < 0 || positionX > this.height-1) {
+      console.log('not on map');
+    } else {
+      if(mapArray[positionY][positionX][0] instanceof Player) return true;
+    }
+  }
+
+  displayModal(player) {
+    $("#choiceModal").css("visibility", "visible");
+    $("#choiceModal")[0].children[0].innerText = player.name + ", you have to make a choice :";
+  }
+
+  hideModal() {
+    $("#choiceModal").css("visibility", "hidden");
+  }
+
+  playerAttack(attacker) {
+    //refacto
+    let defender = null;
+    attacker === this.firstPlayer ? 
+      defender = this.secondPlayer :
+      defender = this.firstPlayer;
+    //!!!!!!!
+    
+    this.displayModal(attacker);
+    $(".choiceBtn").on("click", (e) => {
+      attacker.chooseAttackOrDefence(e)
+      $(".choiceBtn").off("click");
+      this.hideModal();
+      if(attacker.hasDefence === false) defender.isAttacked(attacker.weapon.damages);
+      if(defender.checkIfLifeOver()) this.gameOver(attacker, defender);
+      this.turn += 1;
+      this.playerTurn();
+    })
+  }
+
+  gameOver(winner, looser) {
+    this.hideModal();
+    console.log("- GAME OVER -");
+    console.log(winner.name + " you win !")
+    console.log(looser.name + " you loose !")
+    $("#restartModal").css("visibility", "visible");
+    $(".restartBtn").on("click", () => {
+      $(".restartBtn").off("click");
+      this.restartGame();
+    });
+  }
+
+  restartGame() {
+    location.reload();
+  }
+
+  // Handle the player click (new position, new weapon,...) and Check if we init a new turn or a battle
   handlePlayerClick = (player) => {
     $("#game-map").on("click", (el) => {
       const elClass = el.target.className;
       if(elClass === "move-available" || elClass.includes("weapon-available")) {
+        $("#game-map").off("click");
         this.checkTypeOfPlayerPosition(player.position);
         this.checkWay(player, player.position, el.target.dataset);
         this.playerPickNewPosition(player);
-        //this.checkPlayerAround() ? this.initBattle() : this.initNewTurn();
-        this.initNewTurn();
+        this.checkPlayerAround(player.position) ? this.initBattle() : this.initNewTurn();
       }
     });
   }
