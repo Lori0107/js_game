@@ -7,24 +7,24 @@ class Player {
       positionX: null
     },
     this.weapon = weapon,
-    this.hasDefence = false
+    this.hasDefense = false
   }
 
   assignPositionToWeapon() {
     this.weapon.position = this.position;
   }
 
-  chooseAttackOrDefence(e) {
-    e.target.value === "defence" ? 
-      this.hasDefence = true : 
-      this.hasDefence = false;
+  chooseAttackOrDefense(e) {
+    e.target.value === "defense" ? 
+      this.hasDefense = true :
+      this.hasDefense = false;
     console.log("---- PLAYER " + this.name + " CHOOSE ---- ");
     console.log(e.target.value);
     console.log("----------------------------------------- ");
   }
 
   isAttacked(damagePoints) {
-    this.hasDefence ? 
+    this.hasDefense ? 
       this.life -= (damagePoints/2) : 
       this.life -= damagePoints;
     if(this.life < 0) this.life = 0;

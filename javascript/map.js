@@ -109,9 +109,10 @@ class Map {
 
   // Determine which player can play
   playerTurn = () => {
-    let player = this.isEven(this.turn) ? this.firstPlayer : this.secondPlayer;
+    const player = this.isEven(this.turn) ? this.firstPlayer : this.secondPlayer;
+    const defender = player == this.firstPlayer ? this.secondPlayer : this.firstPlayer;
     this.isBattle ?
-      this.playerAttack(player) :
+      this.playerAttack(player, defender) :
       this.playerMove(player);
   }
 
@@ -218,7 +219,7 @@ class Map {
       this.checkYWay(player, playerPosition, targetPosition);
   }
 
-  // Useful in case there is a weapon on the player's position
+  // Useful in case there's a weapon on the player's position
   checkTypeOfPlayerPosition = (position) => {
     mapArray[position.positionY][position.positionX].length > 1 ? 
       mapArray[position.positionY][position.positionX].splice(0, 1) : 
@@ -231,12 +232,10 @@ class Map {
     player.weapon = weaponPicked;
   }
 
-  // Handle the new player's position
   playerPickNewPosition = (player) => {
     mapArray[player.position.positionY][player.position.positionX].unshift(player);
   }
 
-  // Handle the player's weapon change
   playerPickNewWeapon = (player) => {
     const y = player.position.positionY;
     const x = player.position.positionX;
@@ -265,13 +264,13 @@ class Map {
   }
 
   checkPlayerAround(playerPosition) {
-    return  this.test(playerPosition.positionY + 1, playerPosition.positionX) ||
-            this.test(playerPosition.positionY - 1, playerPosition.positionX) ||
-            this.test(playerPosition.positionY, playerPosition.positionX + 1) ||
-            this.test(playerPosition.positionY, playerPosition.positionX - 1)
+    return  this.isEnemyPosition(playerPosition.positionY + 1, playerPosition.positionX) ||
+            this.isEnemyPosition(playerPosition.positionY - 1, playerPosition.positionX) ||
+            this.isEnemyPosition(playerPosition.positionY, playerPosition.positionX + 1) ||
+            this.isEnemyPosition(playerPosition.positionY, playerPosition.positionX - 1)
   }
 
-  test(positionY, positionX) {
+  isEnemyPosition(positionY, positionX) {
     if(positionY < 0 || positionY > this.height-1 || positionX < 0 || positionX > this.height-1) {
       console.log('not on map');
     } else {
@@ -288,24 +287,24 @@ class Map {
     $("#choiceModal").css("visibility", "hidden");
   }
 
-  playerAttack(attacker) {
-    //refacto
-    let defender = null;
-    attacker === this.firstPlayer ? 
-      defender = this.secondPlayer :
-      defender = this.firstPlayer;
-    //!!!!!!!
-    
+  playerAttack(attacker, defender) {
     this.displayModal(attacker);
     $(".choiceBtn").on("click", (e) => {
-      attacker.chooseAttackOrDefence(e)
+      attacker.chooseAttackOrDefense(e)
       $(".choiceBtn").off("click");
       this.hideModal();
-      if(attacker.hasDefence === false) defender.isAttacked(attacker.weapon.damages);
-      if(defender.checkIfLifeOver()) this.gameOver(attacker, defender);
-      this.turn += 1;
-      this.playerTurn();
+      if(!attacker.hasDefense) defender.isAttacked(attacker.weapon.damages);
+      this.checkIfGameOver(attacker, defender)
     })
+  }
+
+  checkIfGameOver(attacker, defender) {
+    if(defender.checkIfLifeOver()) {
+      this.gameOver(attacker, defender);
+    } else {
+      this.turn += 1; 
+      this.playerTurn();
+    }
   }
 
   gameOver(winner, looser) {
@@ -321,6 +320,7 @@ class Map {
   }
 
   restartGame() {
+    //redefinir l'app a l'état initial
     location.reload();
   }
 
