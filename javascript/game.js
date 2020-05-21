@@ -30,5 +30,4 @@ initGame = () => {
   map.playerTurn();
 }
 
-//refacto
 $(document).ready(() => initGame());

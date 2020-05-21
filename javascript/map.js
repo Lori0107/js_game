@@ -4,8 +4,6 @@ class Map {
     this.width = width,
     this.firstPlayer = firstPlayer,
     this.secondPlayer = secondPlayer,
-    //this.mapArray = [],
-    //forbiddenCasesArray = [],
     this.weaponsArray = weaponsArray,
     this.turn = 0,
     this.isBattle = false
@@ -29,7 +27,6 @@ class Map {
     return { positionY, positionX };
   }
 
-  // Generate the disabled cases of the Map
   generateDisabledCases = (disabledCases) => {
     for(let i = 0; i < disabledCases; i++) {
       const val = this.getRandomPosition(mapArray);
@@ -54,19 +51,16 @@ class Map {
     }
   }
 
-  // Generate weapons's positions
   generateWeaponsPosition = () => {
     this.weaponsArray.forEach(weapon => this.generateItemPosition(weapon, true));
   }
 
-  // Generate players's positions
   generatePlayersPosition = () => {
     this.generateItemPosition(this.firstPlayer, true);
     this.generatesecondPlayerPosition(this.secondPlayer);
   }
 
   // Check if 2 items are side by side
-  // return seulement la condition
   compareItemsPosition = (itemOne, itemTwo) => {
     if (itemOne.positionX === itemTwo.positionX && itemOne.positionY === itemTwo.positionY || 
         itemOne.positionX === itemTwo.positionX + 1 && itemOne.positionY === itemTwo.positionY ||
@@ -76,9 +70,8 @@ class Map {
         itemOne.positionX === itemTwo.positionX + 1 && itemOne.positionY === itemTwo.positionY + 1 ||
         itemOne.positionX === itemTwo.positionX - 1 && itemOne.positionY === itemTwo.positionY - 1 ||
         itemOne.positionX === itemTwo.positionX + 1 && itemOne.positionY === itemTwo.positionY - 1 ||
-        itemOne.positionX === itemTwo.positionX - 1 && itemOne.positionY === itemTwo.positionY + 1) {
+        itemOne.positionX === itemTwo.positionX - 1 && itemOne.positionY === itemTwo.positionY + 1)
       return true;
-    } else return false;
   }
 
   // Generate the second Player's position, check if is not near the first Player
@@ -99,12 +92,12 @@ class Map {
     mapArray.map(y => y.map(x => this.displayItems('#game-map', x[0].state.toLowerCase(), x[0].position.positionX, x[0].position.positionY)))
   }
 
-  // Generate a div for each Map's item
+  // Generate each Map's item on DOM
   displayItems = (map, customClass, customPositionX, customPositionY) => {
     $(map).append('<div class="'+ customClass +'" data-x="' + customPositionX + '" data-y="' + customPositionY + '"></div>');
   }
 
-  // Check if a value is even
+  // Check if a value is even, useful for playerTurn()
   isEven = (value) => value%2 === 0;
 
   // Determine which player can play
@@ -184,7 +177,7 @@ class Map {
     })
   }
 
-  //checker case par case juqu'à la target
+  // Check cases until target position
   checkXWay(player, playerPosition, targetPosition) {
     if(targetPosition.x > playerPosition.positionX) {
       do {
