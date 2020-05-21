@@ -287,6 +287,8 @@ class Map {
       $(".choiceBtn").off("click");
       this.hideModal();
       if(!attacker.hasDefense) defender.isAttacked(attacker.weapon.damages);
+      attacker.displayInfo();
+      defender.displayInfo();
       this.checkIfGameOver(attacker, defender)
     })
   }
@@ -326,6 +328,7 @@ class Map {
         this.checkTypeOfPlayerPosition(player.position);
         this.checkWay(player, player.position, el.target.dataset);
         this.playerPickNewPosition(player);
+        player.displayInfo();
         this.checkPlayerAround(player.position) ? this.initBattle() : this.initNewTurn();
       }
     });

@@ -3,17 +3,17 @@ const forbiddenCasesArray = [];
 let turn = 0;
 
 // Weapons's instanciations
-const broom = new Weapon("Broom", 10);
-const poison = new Weapon("Poison", 10);
-const voodoo = new Weapon("Voodoo", 20);
-const sword = new Weapon("Sword", 20);
-const wand = new Weapon("Wand", 30);
+const knife = new Weapon("Knife", 10);
+const shuriken = new Weapon("Shuriken", 10);
+const kunai = new Weapon("Kunai", 20);
+const nunchaku = new Weapon("Nunchaku", 20);
+const sword = new Weapon("Sword", 30);
 
-const weapons = [ voodoo, sword, wand ];
+const weapons = [ sword, nunchaku, kunai ];
 
 // Players's instanciations
-const player1 = new Player("Player1", 100, broom);
-const player2 = new Player("Player2", 100, poison);
+const player1 = new Player("Player1", 100, shuriken);
+const player2 = new Player("Player2", 100, knife);
 const players = [ player1, player2 ];
 
 // Map's instanciations
@@ -26,6 +26,7 @@ initGame = () => {
   map.generatePlayersPosition();
   players.map(player => {
     player.assignPositionToWeapon();
+    player.displayInfo()
   });
   map.playerTurn();
 }

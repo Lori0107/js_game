@@ -10,6 +10,17 @@ class Player {
     this.hasDefense = false
   }
 
+  displayInfo() {
+    $("#" + this.name +"-name")[0].textContent = this.name;
+    //$("#" + this.name +"-life")[0].dataset.percent = this.life;
+    $("#" + this.name +"-life-label")[0].textContent = this.life + " pts";
+    $("#" + this.name +"-weapon")[0].textContent = this.weapon.name;
+    $("#" + this.name +"-weapon-damages")[0].textContent = this.weapon.damages + "pts";
+    $("#" + this.name +"-defense")[0].textContent = this.hasDefense == true ?
+      "Yes" : "No";
+    //$("#" + this.name +"-life").progress();
+  }
+
   assignPositionToWeapon() {
     this.weapon.position = this.position;
   }

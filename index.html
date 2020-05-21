@@ -4,12 +4,58 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.4/dist/semantic.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.4/dist/semantic.min.js"></script>
   <link rel="stylesheet" href="style.css">
-  <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
   <title>JS Game</title>
 </head>
 <body>
-  <div id='game-map'></div>
+  <div class="game-area">
+    <div class="ui card game-area-element player-info">
+      <div class="image">
+        <img src="./img/player-one.png" alt="">
+      </div>
+      <div class="content">
+        <h3 id="Player1-name"></h3>
+        <h4 class="header">Life</h4>
+        <p id="Player1-life-label"></p>
+        <!-- <div class="ui small progress" id="Player1-life">
+          <div class="bar"></div>
+          <div class="label" id="Player1-life-label"></div>
+        </div> -->
+          <h4 class="header">Weapon</h4>
+          <p id="Player1-weapon"></p>
+          <p id="Player1-weapon-damages"></p>
+          <h4 class="header">Is using defense ?</h4>
+          <p id="Player1-defense"></p>
+        <!-- <div class="ui red progress" data-total="100" data-value="70">
+          <div class="bar"></div>
+          <div class="label">Damages - </div>
+        </div> -->
+      </div>
+    </div>
+
+
+    <div id="game-map" class="game-area-element"></div>
+
+    <div class="ui card game-area-element player-info">
+      <div class="image">
+        <img src="./img/player-two.png" alt="">
+      </div>
+      <div class="content">
+        <h3 id="Player2-name"></h3>
+        <h4 class="header">Life</h4>
+        <p id="Player2-life-label"></p>
+        <h4 class="header">Weapon</h4>
+        <p id="Player2-weapon"></p>
+        <p id="Player2-weapon-damages"></p>
+        <h4 class="header">Is using defense ?</h4>
+        <p id="Player2-defense"></p>
+      </div>
+    </div>
+  </div>
+
   <div id="choiceModal">
     <h3></h3>
     <button class="choiceBtn" value="attack">Attack</button>
@@ -19,6 +65,8 @@
     <h3>Do you want to play again ?</h3>
     <button class="restartBtn">RESTART GAME</button>
   </div>
+  
+
   <!-- scripts -->
   <script src="./javascript/weapon.js"></script>
   <script src="./javascript/player.js"></script>
