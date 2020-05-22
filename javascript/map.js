@@ -275,28 +275,31 @@ class Map {
     }
   }
 
-  displayModal(player) {
+  displayChoiceModal(player) {
     $("#choice-modal").css("visibility", "visible");
     $("#choice-header")[0].textContent = player.pseudo + " !";
     $("#choice-img")[0].src = "/img/" + player.name + ".png";
   }
 
-  hideModal() {
+  hideChoiceModal() {
     $("#choice-modal").css("visibility", "hidden");
   }
 
   playerAttack(attacker, defender) {
-    this.displayModal(attacker);
+    this.displayChoiceModal(attacker);
     $(".choice-btn").on("click", (e) => {
-      //sortir dans une fonction (plus réutilisable)
-      attacker.chooseAttackOrDefense(e)
       $(".choice-btn").off("click");
-      this.hideModal();
-      if(!attacker.hasDefense) defender.isAttacked(attacker.weapon.damages);
-      attacker.displayInfo();
-      defender.displayInfo();
-      this.checkIfGameOver(attacker, defender)
+      this.manageAttackerChoice(attacker, defender, e);
     })
+  }
+
+  manageAttackerChoice(attacker, defender, choice) {
+    attacker.chooseAttackOrDefense(choice)
+    this.hideChoiceModal();
+    if(!attacker.hasDefense) defender.isAttacked(attacker.weapon.damages);
+    attacker.displayInfo();
+    defender.displayInfo();
+    this.checkIfGameOver(attacker, defender);
   }
 
   checkIfGameOver(attacker, defender) {
@@ -309,13 +312,14 @@ class Map {
   }
 
   gameOver(winner, looser) {
-    this.hideModal();
-    console.log("- GAME OVER -");
-    console.log(winner.name + " you win !")
-    console.log(looser.name + " you loose !")
-    $("#restartModal").css("visibility", "visible");
-    $(".restartBtn").on("click", () => {
-      $(".restartBtn").off("click");
+    this.hideChoiceModal();
+    $(".ui.dimmer").dimmer({
+      closable : false
+    }).dimmer('show');
+    $("#winner").textContent = winner + ", you win !";
+    $("#looser").textContent = looser + ", maybe next time ...";
+    $("#restart-btn").on("click", () => {
+      $("#restart-btn").off("click");
       this.restartGame();
     });
   }

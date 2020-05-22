@@ -14,9 +14,7 @@ class Player {
   displayInfo() {
     $("#" + this.name +"-name")[0].textContent = this.pseudo;
     $("#" + this.name +"-life-points")[0].textContent = this.life + " PV";
-    $("#" + this.name +"-life").progress({
-      percent: this.life
-    });
+    $("#" + this.name +"-life").progress({ percent: this.life });
     $("#" + this.name +"-weapon")[0].textContent = this.weapon.name;
     $("#" + this.name +"-weapon-points")[0].textContent = "Attack " + this.weapon.damages;
     $("#" + this.name + "-weapon-rating").rating({

@@ -12,7 +12,7 @@
 </head>
 <body>
   <div class="game-area">
-    <div class="ui card game-area-element player-info">
+    <div class="ui card player-info">
       <div class="image">
         <img class="player-img" src="./img/p1.png" alt="">
       </div>
@@ -35,30 +35,32 @@
       </div>
     </div>
 
-    <div>
-      <div id="choice-modal">
+    <div class="map-area">
+      <div id="game-map"></div>
+      <div class="ui cards" id="choice-modal">
         <div class="card">
           <div class="content">
             <img class="right floated avatar ui image" id="choice-img">
             <h3 class="header" id="choice-header"></h3>
-            <p class="description">You have to make a choice ...</p>
+            <p class="meta">You have to make a choice ...</p>
           </div>
           <div class="extra content">
             <div class="ui two buttons">
-              <button class="ui basic button choice-btn" value="attack">Attack enemy</button>
-              <button class="ui basic button choice-btn" value="defense">Active defense</button>
+              <button class="ui basic button olive choice-btn" value="attack">Attack enemy</button>
+              <button class="ui basic button orange choice-btn" value="defense">Active defense</button>
             </div>
           </div>
         </div>
       </div>
-      <div id="restartModal">
-        <h3>Do you want to play again ?</h3>
-        <button class="restartBtn">RESTART GAME</button>
+      <div class="ui page dimmer" id="restart-modal">
+        <h1 class="header" id="winner"></h1>
+        <h1 class="header" id="looser"></h1>
+        <h3 class="header">Want to play again ?</h3>
+        <button class="ui button" id="restart-btn">RESTART GAME</button>
       </div>
-      <div id="game-map" class="game-area-element"></div>
     </div>
 
-    <div class="ui card game-area-element player-info">
+    <div class="ui card player-info">
       <div class="image">
         <img src="./img/p2.png" alt="">
       </div>

@@ -6,9 +6,18 @@
   padding: 10px;
 }
 
+.ui.cards {
+  display: flex;
+  padding: 10px !important;
+}
+
+.ui.cards.card {
+  margin: auto !important;
+}
+
 .ui.card {
   height: 100%;
-  width: 10% !important;
+  width: 15vw;
   margin: 0;
   text-align: center;
 }
@@ -22,14 +31,14 @@
 }
 
 #choice-modal {
-  width: 50%;
+  visibility: hidden;
 }
 
-#choice-modal.card {
-  padding: 10px;
-  border: 1px solid lightgrey;
-  border-radius: 5px;
+#restart-modal {
+  color: #ffffff;
 }
+
+/* GAME MAP */
 
 #game-map {
   width: 620px;
@@ -108,12 +117,4 @@
   height: 60px;
   background-image: url("./img/p2.png");
   background-size: cover;
-}
-
-#choice-modal {
-  visibility: hidden;
-}
-
-#restartModal {
-  visibility: hidden;
 }
