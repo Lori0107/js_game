@@ -27,17 +27,21 @@ class Map {
     return { positionY, positionX };
   }
 
-  generateDisabledCases = (disabledCases) => {
-    for(let i = 0; i < disabledCases; i++) {
+  generateDisableCases = (disableCases) => {
+    for(let i = 0; i < disableCases; i++) {
       const val = this.getRandomPosition(mapArray);
-      mapArray[val.positionY][val.positionX][0].state = "disabled";
-      forbiddenCasesArray.push(val);
+      if (forbiddenCasesArray.some(forbiddenItem => val.positionY === forbiddenItem.positionY && val.positionX === forbiddenItem.positionX)) {
+        i--;
+      } else {
+        mapArray[val.positionY][val.positionX][0].state = "disable";
+        forbiddenCasesArray.push(val);
+      }
     }
   }
 
   // Generate random position for a given item, take into account positions already taken
   generateItemPosition = (item, isRegistered) => {
-    let val = this.getRandomPosition(mapArray);
+    const val = this.getRandomPosition(mapArray);
     if (forbiddenCasesArray.some(forbiddenItem => val.positionY === forbiddenItem.positionY && val.positionX === forbiddenItem.positionX)) {
       return this.generateItemPosition(item, isRegistered);
     } else if (isRegistered == true) {
@@ -151,7 +155,7 @@ class Map {
         move[1] < 0 || 
         move[0] > this.height-1 || 
         move[1] > this.height-1 || 
-        mapArray[move[0]][move[1]][0].state == "disabled" || 
+        mapArray[move[0]][move[1]][0].state == "disable" || 
         mapArray[move[0]][move[1]][0] instanceof Player) {
         return true;
       } else if (mapArray[move[0]][move[1]][0] instanceof Weapon) {
@@ -272,19 +276,21 @@ class Map {
   }
 
   displayModal(player) {
-    $("#choiceModal").css("visibility", "visible");
-    $("#choiceModal")[0].children[0].innerText = player.name + ", you have to make a choice :";
+    $("#choice-modal").css("visibility", "visible");
+    $("#choice-header")[0].textContent = player.pseudo + " !";
+    $("#choice-img")[0].src = "/img/" + player.name + ".png";
   }
 
   hideModal() {
-    $("#choiceModal").css("visibility", "hidden");
+    $("#choice-modal").css("visibility", "hidden");
   }
 
   playerAttack(attacker, defender) {
     this.displayModal(attacker);
-    $(".choiceBtn").on("click", (e) => {
+    $(".choice-btn").on("click", (e) => {
+      //sortir dans une fonction (plus réutilisable)
       attacker.chooseAttackOrDefense(e)
-      $(".choiceBtn").off("click");
+      $(".choice-btn").off("click");
       this.hideModal();
       if(!attacker.hasDefense) defender.isAttacked(attacker.weapon.damages);
       attacker.displayInfo();
@@ -316,6 +322,7 @@ class Map {
 
   restartGame() {
     //redefinir l'app a l'état initial
+    //instance d'init game
     location.reload();
   }
 

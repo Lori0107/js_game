@@ -14,58 +14,74 @@
   <div class="game-area">
     <div class="ui card game-area-element player-info">
       <div class="image">
-        <img src="./img/player-one.png" alt="">
+        <img class="player-img" src="./img/p1.png" alt="">
       </div>
       <div class="content">
-        <h3 id="Player1-name"></h3>
-        <h4 class="header">Life</h4>
-        <p id="Player1-life-label"></p>
-        <!-- <div class="ui small progress" id="Player1-life">
+        <h3 class="header" id="p1-name"></h3>
+        <div class="ui orange small progress" id="p1-life">
           <div class="bar"></div>
-          <div class="label" id="Player1-life-label"></div>
-        </div> -->
-          <h4 class="header">Weapon</h4>
-          <p id="Player1-weapon"></p>
-          <p id="Player1-weapon-damages"></p>
-          <h4 class="header">Is using defense ?</h4>
-          <p id="Player1-defense"></p>
-        <!-- <div class="ui red progress" data-total="100" data-value="70">
-          <div class="bar"></div>
-          <div class="label">Damages - </div>
-        </div> -->
+          <p class="label" id="p1-life-points"></p>
+        </div>
+          <h4 class="header">Equipment</h4>
+          <p id="p1-weapon"></p>
+          <div class="ui yellow rating" id="p1-weapon-rating" data-max-rating="3"></div>
+          <p class="center aligned" id="p1-weapon-points"></p>
+      </div>
+      <div class="extra content">
+        <div class="ui orange label">
+          Defense
+          <div class="detail" id="p1-defense"></div>
+        </div>
       </div>
     </div>
 
-
-    <div id="game-map" class="game-area-element"></div>
+    <div>
+      <div id="choice-modal">
+        <div class="card">
+          <div class="content">
+            <img class="right floated avatar ui image" id="choice-img">
+            <h3 class="header" id="choice-header"></h3>
+            <p class="description">You have to make a choice ...</p>
+          </div>
+          <div class="extra content">
+            <div class="ui two buttons">
+              <button class="ui basic button choice-btn" value="attack">Attack enemy</button>
+              <button class="ui basic button choice-btn" value="defense">Active defense</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="restartModal">
+        <h3>Do you want to play again ?</h3>
+        <button class="restartBtn">RESTART GAME</button>
+      </div>
+      <div id="game-map" class="game-area-element"></div>
+    </div>
 
     <div class="ui card game-area-element player-info">
       <div class="image">
-        <img src="./img/player-two.png" alt="">
+        <img src="./img/p2.png" alt="">
       </div>
       <div class="content">
-        <h3 id="Player2-name"></h3>
-        <h4 class="header">Life</h4>
-        <p id="Player2-life-label"></p>
-        <h4 class="header">Weapon</h4>
-        <p id="Player2-weapon"></p>
-        <p id="Player2-weapon-damages"></p>
-        <h4 class="header">Is using defense ?</h4>
-        <p id="Player2-defense"></p>
+        <h3 class="header" id="p2-name"></h3>
+        <div class="ui olive small progress" id="p2-life" data-percent="100">
+          <div class="bar"></div>
+          <p class="label" id="p2-life-points"></p>
+        </div>
+        <h4 class="header">Equipment</h4>
+        <p id="p2-weapon"></p>
+        <div class="ui yellow rating" id="p2-weapon-rating" data-max-rating="3"></div>
+        <p class="center aligned" id="p2-weapon-points"></p>
+        
+      </div>
+      <div class="extra content">
+        <div class="ui olive label">
+          Defense
+          <div class="detail" id="p2-defense"></div>
+        </div>
       </div>
     </div>
   </div>
-
-  <div id="choiceModal">
-    <h3></h3>
-    <button class="choiceBtn" value="attack">Attack</button>
-    <button class="choiceBtn" value="defense">Defence against the next Attack</button>
-  </div>
-  <div id="restartModal">
-    <h3>Do you want to play again ?</h3>
-    <button class="restartBtn">RESTART GAME</button>
-  </div>
-  
 
   <!-- scripts -->
   <script src="./javascript/weapon.js"></script>

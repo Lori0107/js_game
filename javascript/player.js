@@ -1,6 +1,7 @@
 class Player {
-  constructor(name, life, weapon) {
+  constructor(name, pseudo, life, weapon) {
     this.name = name,
+    this.pseudo = pseudo,
     this.life = life,
     this.position = {
       positionY: null,
@@ -11,14 +12,20 @@ class Player {
   }
 
   displayInfo() {
-    $("#" + this.name +"-name")[0].textContent = this.name;
-    //$("#" + this.name +"-life")[0].dataset.percent = this.life;
-    $("#" + this.name +"-life-label")[0].textContent = this.life + " pts";
+    $("#" + this.name +"-name")[0].textContent = this.pseudo;
+    $("#" + this.name +"-life-points")[0].textContent = this.life + " PV";
+    $("#" + this.name +"-life").progress({
+      percent: this.life
+    });
     $("#" + this.name +"-weapon")[0].textContent = this.weapon.name;
-    $("#" + this.name +"-weapon-damages")[0].textContent = this.weapon.damages + "pts";
+    $("#" + this.name +"-weapon-points")[0].textContent = "Attack " + this.weapon.damages;
+    $("#" + this.name + "-weapon-rating").rating({
+      icon: "circle",
+      interactive: false,
+      initialRating: this.weapon.damages / 10,
+    });
     $("#" + this.name +"-defense")[0].textContent = this.hasDefense == true ?
-      "Yes" : "No";
-    //$("#" + this.name +"-life").progress();
+      "ACTIVE" : "DISABLED";
   }
 
   assignPositionToWeapon() {
@@ -29,9 +36,6 @@ class Player {
     e.target.value === "defense" ? 
       this.hasDefense = true :
       this.hasDefense = false;
-    console.log("---- PLAYER " + this.name + " CHOOSE ---- ");
-    console.log(e.target.value);
-    console.log("----------------------------------------- ");
   }
 
   isAttacked(damagePoints) {
@@ -39,9 +43,6 @@ class Player {
       this.life -= (damagePoints/2) : 
       this.life -= damagePoints;
     if(this.life < 0) this.life = 0;
-    console.log("---- PLAYER " + this.name + " IS ATTACKED ---- ");
-    console.log("Life left : " + this.life + "point");
-    console.log("----------------------------------------- ");
   }
 
   checkIfLifeOver() {
