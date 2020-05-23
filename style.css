@@ -1,3 +1,7 @@
+body {
+  position: relative;
+}
+
 .game-area {
   display: flex;
   flex-direction: row;
@@ -7,12 +11,17 @@
 }
 
 .ui.cards {
-  display: flex;
-  padding: 10px !important;
+  position: absolute;
+  left: 25px;
+  bottom: 25px;
+  /* quand HUGE ecran: left et bottom +++ / 850px en height */
 }
 
-.ui.cards.card {
-  margin: auto !important;
+@media (min-height: 900px) {
+  .ui.cards {
+    bottom: 70px;
+    left: 43%;
+  }
 }
 
 .ui.card {
@@ -31,10 +40,10 @@
 }
 
 #choice-modal {
-  visibility: hidden;
+  display: none;
 }
 
-#restart-modal {
+.ui.dimmer {
   color: #ffffff;
 }
 

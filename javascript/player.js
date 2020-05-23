@@ -37,7 +37,8 @@ class Player {
   }
 
   isAttacked(damagePoints) {
-    this.hasDefense ? 
+    $('.' + this.name).transition('shake');
+    this.hasDefense ?
       this.life -= (damagePoints/2) : 
       this.life -= damagePoints;
     if(this.life < 0) this.life = 0;

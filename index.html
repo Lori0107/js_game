@@ -11,7 +11,41 @@
   <title>JS Game</title>
 </head>
 <body>
+  <!-- Game start Dimmer -->
+  <div class="ui start page dimmer" >
+    <h3>Ninjas are ready ...</h3>
+    <em class="large" data-emoji=":muscle:"></em>
+    <h1 class="header" id="start-message"></h1>
+    <span class="ui medium red text">CLICK TO START</span>
+  </div>
+
+  <!-- Interactive choice modal -->
+  <div class="ui cards" id="choice-modal">
+    <div class="card">
+      <div class="content">
+        <img class="right floated avatar ui image" id="choice-img">
+        <h3 class="header" id="choice-header"></h3>
+        <p class="meta">You have to make a choice ...</p>
+      </div>
+      <div class="extra content">
+        <div class="ui two buttons">
+          <button class="ui basic button olive choice-btn" value="attack">Attack enemy</button>
+          <button class="ui basic button orange choice-btn" value="defense">Active defense</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game over Dimmer -->
+  <div class="ui over page dimmer" id="restart-modal">
+    <h1 class="header" id="winner"></h1>
+    <em class="large" data-emoji=":tada:"></em>
+    <h3 class="header">Want to play again ?</h3>
+    <button class="ui red inverted button" id="restart-btn">RESTART GAME</button>
+  </div>
+
   <div class="game-area">
+    <!-- Player1 card -->
     <div class="ui card player-info">
       <div class="image">
         <img class="player-img" src="./img/p1.png" alt="">
@@ -35,34 +69,13 @@
       </div>
     </div>
 
-    <div class="map-area">
-      <div id="game-map"></div>
-      <div class="ui cards" id="choice-modal">
-        <div class="card">
-          <div class="content">
-            <img class="right floated avatar ui image" id="choice-img">
-            <h3 class="header" id="choice-header"></h3>
-            <p class="meta">You have to make a choice ...</p>
-          </div>
-          <div class="extra content">
-            <div class="ui two buttons">
-              <button class="ui basic button olive choice-btn" value="attack">Attack enemy</button>
-              <button class="ui basic button orange choice-btn" value="defense">Active defense</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="ui page dimmer" id="restart-modal">
-        <h1 class="header" id="winner"></h1>
-        <h1 class="header" id="looser"></h1>
-        <h3 class="header">Want to play again ?</h3>
-        <button class="ui button" id="restart-btn">RESTART GAME</button>
-      </div>
-    </div>
+    <!-- The Map -->
+    <div id="game-map"></div>
 
+    <!-- Player2 card -->
     <div class="ui card player-info">
       <div class="image">
-        <img src="./img/p2.png" alt="">
+        <img class="player-img" src="./img/p2.png" alt="">
       </div>
       <div class="content">
         <h3 class="header" id="p2-name"></h3>
@@ -74,7 +87,6 @@
         <p id="p2-weapon"></p>
         <div class="ui yellow rating" id="p2-weapon-rating" data-max-rating="3"></div>
         <p class="center aligned" id="p2-weapon-points"></p>
-        
       </div>
       <div class="extra content">
         <div class="ui olive label">

@@ -2,6 +2,8 @@ class Map {
   constructor(height, width, firstPlayer, secondPlayer, weaponsArray) {
     this.height = height,
     this.width = width,
+    this.mapArray = [];
+    this.forbiddenCasesArray = [];
     this.firstPlayer = firstPlayer,
     this.secondPlayer = secondPlayer,
     this.weaponsArray = weaponsArray,
@@ -13,7 +15,7 @@ class Map {
   generateMap = () => {
     for(let y = 0; y < this.height; y++) {
       const lines = [];
-      mapArray.push(lines);
+      this.mapArray.push(lines);
       for(let x = 0; x < this.width; x++) {
         lines.push([new Case()]);
       }
@@ -29,26 +31,26 @@ class Map {
 
   generateDisableCases = (disableCases) => {
     for(let i = 0; i < disableCases; i++) {
-      const val = this.getRandomPosition(mapArray);
-      if (forbiddenCasesArray.some(forbiddenItem => val.positionY === forbiddenItem.positionY && val.positionX === forbiddenItem.positionX)) {
+      const val = this.getRandomPosition(this.mapArray);
+      if (this.forbiddenCasesArray.some(forbiddenItem => val.positionY === forbiddenItem.positionY && val.positionX === forbiddenItem.positionX)) {
         i--;
       } else {
-        mapArray[val.positionY][val.positionX][0].state = "disable";
-        forbiddenCasesArray.push(val);
+        this.mapArray[val.positionY][val.positionX][0].state = "disable";
+        this.forbiddenCasesArray.push(val);
       }
     }
   }
 
   // Generate random position for a given item, take into account positions already taken
   generateItemPosition = (item, isRegistered) => {
-    const val = this.getRandomPosition(mapArray);
-    if (forbiddenCasesArray.some(forbiddenItem => val.positionY === forbiddenItem.positionY && val.positionX === forbiddenItem.positionX)) {
+    const val = this.getRandomPosition(this.mapArray);
+    if (this.forbiddenCasesArray.some(forbiddenItem => val.positionY === forbiddenItem.positionY && val.positionX === forbiddenItem.positionX)) {
       return this.generateItemPosition(item, isRegistered);
     } else if (isRegistered == true) {
       item.position = {positionY: val.positionY, positionX: val.positionX};
-      mapArray[val.positionY][val.positionX][0] = item;
-      mapArray[val.positionY][val.positionX][0].state = item.name;
-      forbiddenCasesArray.push(val);
+      this.mapArray[val.positionY][val.positionX][0] = item;
+      this.mapArray[val.positionY][val.positionX][0].state = item.name;
+      this.forbiddenCasesArray.push(val);
       return val;
     } else {
       return val;
@@ -85,15 +87,15 @@ class Map {
       return this.generatesecondPlayerPosition(playerItem);
     } else {
       playerItem.position = {positionY: itemPosition.positionY, positionX: itemPosition.positionX};
-      mapArray[itemPosition.positionY][itemPosition.positionX][0] = playerItem;
-      mapArray[itemPosition.positionY][itemPosition.positionX][0].state = playerItem.name;
-      forbiddenCasesArray.push(itemPosition);
+      this.mapArray[itemPosition.positionY][itemPosition.positionX][0] = playerItem;
+      this.mapArray[itemPosition.positionY][itemPosition.positionX][0].state = playerItem.name;
+      this.forbiddenCasesArray.push(itemPosition);
     }
   }
 
   // Handle each Map's item
   generateCases = () => {
-    mapArray.map(y => y.map(x => this.displayItems('#game-map', x[0].state.toLowerCase(), x[0].position.positionX, x[0].position.positionY)))
+    this.mapArray.map(y => y.map(x => this.displayItems('#game-map', x[0].state.toLowerCase(), x[0].position.positionX, x[0].position.positionY)))
   }
 
   // Generate each Map's item on DOM
@@ -155,22 +157,22 @@ class Map {
         move[1] < 0 || 
         move[0] > this.height-1 || 
         move[1] > this.height-1 || 
-        mapArray[move[0]][move[1]][0].state == "disable" || 
-        mapArray[move[0]][move[1]][0] instanceof Player) {
+        this.mapArray[move[0]][move[1]][0].state == "disable" || 
+        this.mapArray[move[0]][move[1]][0] instanceof Player) {
         return true;
-      } else if (mapArray[move[0]][move[1]][0] instanceof Weapon) {
-        mapArray[move[0]][move[1]][0].state += " weapon-available";
-        mapArray[move[0]][move[1]][0].position = { positionY: move[0], positionX: move[1] };
+      } else if (this.mapArray[move[0]][move[1]][0] instanceof Weapon) {
+        this.mapArray[move[0]][move[1]][0].state += " weapon-available";
+        this.mapArray[move[0]][move[1]][0].position = { positionY: move[0], positionX: move[1] };
       } else {
-        mapArray[move[0]][move[1]][0].state = "move-available";
-        mapArray[move[0]][move[1]][0].position = { positionY: move[0], positionX: move[1] };
+        this.mapArray[move[0]][move[1]][0].state = "move-available";
+        this.mapArray[move[0]][move[1]][0].position = { positionY: move[0], positionX: move[1] };
       };
     });
   }
 
   // Remove the player's available moves
   removeMoves = () => {
-    mapArray.map(y => {
+    this.mapArray.map(y => {
       y.map(x => {
         x[0].state == "move-available" ? 
           x[0].state = "empty" :
@@ -186,12 +188,12 @@ class Map {
     if(targetPosition.x > playerPosition.positionX) {
       do {
         playerPosition.positionX++;
-        if(mapArray[playerPosition.positionY][playerPosition.positionX][0] instanceof Weapon) this.playerPickNewWeapon(player);
+        if(this.mapArray[playerPosition.positionY][playerPosition.positionX][0] instanceof Weapon) this.playerPickNewWeapon(player);
       } while (targetPosition.x > playerPosition.positionX);
     } else {
       do {
         playerPosition.positionX--;
-        if(mapArray[playerPosition.positionY][playerPosition.positionX][0] instanceof Weapon) this.playerPickNewWeapon(player);
+        if(this.mapArray[playerPosition.positionY][playerPosition.positionX][0] instanceof Weapon) this.playerPickNewWeapon(player);
       } while (targetPosition.x < playerPosition.positionX);
     }
   }
@@ -200,12 +202,12 @@ class Map {
     if(targetPosition.y > playerPosition.positionY) {
       do {
         playerPosition.positionY++;
-        if(mapArray[playerPosition.positionY][playerPosition.positionX][0] instanceof Weapon) this.playerPickNewWeapon(player);
+        if(this.mapArray[playerPosition.positionY][playerPosition.positionX][0] instanceof Weapon) this.playerPickNewWeapon(player);
       } while (targetPosition.y > playerPosition.positionY);
     } else {
       do {
         playerPosition.positionY--;
-        if(mapArray[playerPosition.positionY][playerPosition.positionX][0] instanceof Weapon) this.playerPickNewWeapon(player);
+        if(this.mapArray[playerPosition.positionY][playerPosition.positionX][0] instanceof Weapon) this.playerPickNewWeapon(player);
       } while (targetPosition.y < playerPosition.positionY);
     }
   }
@@ -218,26 +220,26 @@ class Map {
 
   // Useful in case there's a weapon on the player's position
   checkTypeOfPlayerPosition = (position) => {
-    mapArray[position.positionY][position.positionX].length > 1 ? 
-      mapArray[position.positionY][position.positionX].splice(0, 1) : 
-      mapArray[position.positionY][position.positionX][0] = new Case();
+    this.mapArray[position.positionY][position.positionX].length > 1 ? 
+      this.mapArray[position.positionY][position.positionX].splice(0, 1) : 
+      this.mapArray[position.positionY][position.positionX][0] = new Case();
   }
 
   playerPickWeaponWay = (player, newWeapon) => {
-    let weaponPicked = mapArray[newWeapon.y][newWeapon.x][0];
-    mapArray[newWeapon.y][newWeapon.x][0] = player.weapon;
+    let weaponPicked = this.mapArray[newWeapon.y][newWeapon.x][0];
+    this.mapArray[newWeapon.y][newWeapon.x][0] = player.weapon;
     player.weapon = weaponPicked;
   }
 
   playerPickNewPosition = (player) => {
-    mapArray[player.position.positionY][player.position.positionX].unshift(player);
+    this.mapArray[player.position.positionY][player.position.positionX].unshift(player);
   }
 
   playerPickNewWeapon = (player) => {
     const y = player.position.positionY;
     const x = player.position.positionX;
-    const weaponPicked = mapArray[y][x][0];
-    mapArray[y][x][0] = player.weapon;
+    const weaponPicked = this.mapArray[y][x][0];
+    this.mapArray[y][x][0] = player.weapon;
     player.weapon = weaponPicked;
   }
 
@@ -252,82 +254,19 @@ class Map {
     this.playerTurn();
   }
 
-  initBattle() {
-    this.removeMoves();
-    this.clearMap();
-    this.isBattle = true;
-    this.generateCases();
-    this.playerTurn();
-  }
-
-  checkPlayerAround(playerPosition) {
+  checkPlayerAround = (playerPosition) => {
     return  this.isEnemyPosition(playerPosition.positionY + 1, playerPosition.positionX) ||
             this.isEnemyPosition(playerPosition.positionY - 1, playerPosition.positionX) ||
             this.isEnemyPosition(playerPosition.positionY, playerPosition.positionX + 1) ||
             this.isEnemyPosition(playerPosition.positionY, playerPosition.positionX - 1)
   }
 
-  isEnemyPosition(positionY, positionX) {
+  isEnemyPosition = (positionY, positionX) => {
     if(positionY < 0 || positionY > this.height-1 || positionX < 0 || positionX > this.height-1) {
       console.log('not on map');
     } else {
-      if(mapArray[positionY][positionX][0] instanceof Player) return true;
+      if(this.mapArray[positionY][positionX][0] instanceof Player) return true;
     }
-  }
-
-  displayChoiceModal(player) {
-    $("#choice-modal").css("visibility", "visible");
-    $("#choice-header")[0].textContent = player.pseudo + " !";
-    $("#choice-img")[0].src = "/img/" + player.name + ".png";
-  }
-
-  hideChoiceModal() {
-    $("#choice-modal").css("visibility", "hidden");
-  }
-
-  playerAttack(attacker, defender) {
-    this.displayChoiceModal(attacker);
-    $(".choice-btn").on("click", (e) => {
-      $(".choice-btn").off("click");
-      this.manageAttackerChoice(attacker, defender, e);
-    })
-  }
-
-  manageAttackerChoice(attacker, defender, choice) {
-    attacker.chooseAttackOrDefense(choice)
-    this.hideChoiceModal();
-    if(!attacker.hasDefense) defender.isAttacked(attacker.weapon.damages);
-    attacker.displayInfo();
-    defender.displayInfo();
-    this.checkIfGameOver(attacker, defender);
-  }
-
-  checkIfGameOver(attacker, defender) {
-    if(defender.checkIfLifeOver()) {
-      this.gameOver(attacker, defender);
-    } else {
-      this.turn += 1; 
-      this.playerTurn();
-    }
-  }
-
-  gameOver(winner, looser) {
-    this.hideChoiceModal();
-    $(".ui.dimmer").dimmer({
-      closable : false
-    }).dimmer('show');
-    $("#winner").textContent = winner + ", you win !";
-    $("#looser").textContent = looser + ", maybe next time ...";
-    $("#restart-btn").on("click", () => {
-      $("#restart-btn").off("click");
-      this.restartGame();
-    });
-  }
-
-  restartGame() {
-    //redefinir l'app a l'état initial
-    //instance d'init game
-    location.reload();
   }
 
   // Handle the player click (new position, new weapon,...) and Check if we init a new turn or a battle
@@ -343,5 +282,82 @@ class Map {
         this.checkPlayerAround(player.position) ? this.initBattle() : this.initNewTurn();
       }
     });
+  }
+
+  initBattle = () => {
+    this.removeMoves();
+    this.clearMap();
+    this.isBattle = true;
+    this.generateCases();
+    this.playerTurn();
+  }
+
+  displayStartMessage = () =>{
+    $(".ui.start.dimmer").dimmer('show');
+    $("#start-message")[0].textContent = this.firstPlayer.pseudo + " you play first !";
+  }
+
+  displayChoiceModal = (player) => {
+    $("#choice-modal").transition('fly right');
+    $("#choice-modal").css("display", "block");
+    $("#choice-header")[0].textContent = player.pseudo + " !";
+    $("#choice-img")[0].src = "/img/" + player.name + ".png";
+  }
+
+  hideChoiceModal = () => {
+    $("#choice-modal").transition('fade');
+    $("#choice-modal").css("display", "none");
+  }
+
+  displayGameOverMessage = (winner) => {
+    $(".ui.over.dimmer").dimmer({
+      closable : false
+    }).dimmer('show');
+    $("#winner")[0].textContent = winner.pseudo + " you win !";
+  }
+
+  manageRestartClick = () => {
+    $("#restart-btn").on("click", () => {
+      $("#restart-btn").off("click");
+      this.restartGame();
+    });
+  }
+
+  playerAttack = (attacker, defender) => {
+    this.displayChoiceModal(attacker);
+    $(".choice-btn").on("click", (e) => {
+      $(".choice-btn").off("click");
+      this.manageAttackerChoice(attacker, defender, e);
+    })
+  }
+
+  manageAttackerChoice = (attacker, defender, choice) => {
+    attacker.chooseAttackOrDefense(choice)
+    this.hideChoiceModal();
+    if(!attacker.hasDefense) defender.isAttacked(attacker.weapon.damages);
+    attacker.displayInfo();
+    defender.displayInfo();
+    this.checkIfGameOver(attacker, defender);
+  }
+
+  checkIfGameOver = (attacker, defender) => {
+    if(defender.checkIfLifeOver()) {
+      this.gameOver(attacker, defender);
+    } else {
+      this.turn += 1; 
+      this.playerTurn();
+    }
+  }
+
+  gameOver = (winner, loser) => {
+    this.hideChoiceModal();
+    this.displayGameOverMessage(winner, loser);
+    this.manageRestartClick();
+  }
+
+  restartGame = () => {
+    //redefinir l'app a l'état initial
+    //instance d'init game
+    location.reload();
   }
 }
