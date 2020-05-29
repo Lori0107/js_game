@@ -27,7 +27,7 @@ To create this project, we had to respect some game rules.
   - Damage inflicted depends on the weapon owned by the ninja
   - The ninja can choose to attack or defend against the next hit
   - When the ninja defends, it takes 50% less damage than normal
-  - As soon as a ninja's hit points (initially 100) drop to 0, that player loses. A message is displayed and the game is over.
+  - As soon as a ninja's hit points (initially 100) drop to 0, he loses. A message is displayed and the game is over.
 
 ## Technologies
 Project is created with:
