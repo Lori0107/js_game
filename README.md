@@ -21,7 +21,7 @@ To create this project, we had to respect some game rules.
   He can't pass throught an accessibled box.
   If he pass above a box containing a weapon, he leaves his actual weapon on that spot and replaces it by the new one.
 
-  ### Fight !
+  #### Fight !
   If the ninjas are side by side (horizontally or vertically), the fight begins !
   - Each in turn attacks
   - Damage inflicted depends on the weapon owned by the ninja
