@@ -31,9 +31,7 @@ class Player {
   }
 
   chooseAttackOrDefense(e) {
-    e.target.value === "defense" ? 
-      this.hasDefense = true :
-      this.hasDefense = false;
+    this.hasDefense = e.target.value === "defense";
   }
 
   isAttacked(damagePoints) {

@@ -46,7 +46,7 @@ class Map {
     const val = this.getRandomPosition(this.mapArray);
     if (this.forbiddenCasesArray.some(forbiddenItem => val.positionY === forbiddenItem.positionY && val.positionX === forbiddenItem.positionX)) {
       return this.generateItemPosition(item, isRegistered);
-    } else if (isRegistered == true) {
+    } else if (isRegistered === true) {
       item.position = {positionY: val.positionY, positionX: val.positionX};
       this.mapArray[val.positionY][val.positionX][0] = item;
       this.mapArray[val.positionY][val.positionX][0].state = item.name;
@@ -109,7 +109,7 @@ class Map {
   // Determine which player can play
   playerTurn = () => {
     const player = this.isEven(this.turn) ? this.firstPlayer : this.secondPlayer;
-    const defender = player == this.firstPlayer ? this.secondPlayer : this.firstPlayer;
+    const defender = player === this.firstPlayer ? this.secondPlayer : this.firstPlayer;
     this.isBattle ?
       this.playerAttack(player, defender) :
       this.playerMove(player);
@@ -157,7 +157,7 @@ class Map {
         move[1] < 0 || 
         move[0] > this.height-1 || 
         move[1] > this.height-1 || 
-        this.mapArray[move[0]][move[1]][0].state == "disable" || 
+        this.mapArray[move[0]][move[1]][0].state === "disable" || 
         this.mapArray[move[0]][move[1]][0] instanceof Player) {
         return true;
       } else if (this.mapArray[move[0]][move[1]][0] instanceof Weapon) {
@@ -174,9 +174,9 @@ class Map {
   removeMoves = () => {
     this.mapArray.map(y => {
       y.map(x => {
-        x[0].state == "move-available" ? 
+        x[0].state === "move-available" ? 
           x[0].state = "empty" :
-          x[0].constructor.name == "Weapon" ? 
+          x[0].constructor.name === "Weapon" ? 
             x[0].state = x[0].name :
             false;
       })
@@ -226,7 +226,7 @@ class Map {
   }
 
   playerPickWeaponWay = (player, newWeapon) => {
-    let weaponPicked = this.mapArray[newWeapon.y][newWeapon.x][0];
+    const weaponPicked = this.mapArray[newWeapon.y][newWeapon.x][0];
     this.mapArray[newWeapon.y][newWeapon.x][0] = player.weapon;
     player.weapon = weaponPicked;
   }
