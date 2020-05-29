@@ -39,7 +39,7 @@ Project is created with:
 To run this project, install it locally using npm:
 
 ```
-$ cd /the_project_file_name
+$ cd /the_project_filename
 $ npm install
 $ npm start (run the live-server)
 ```
