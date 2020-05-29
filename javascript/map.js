@@ -58,7 +58,7 @@ class Map {
   }
 
   generateWeaponsPosition = () => {
-    this.weaponsArray.forEach(weapon => this.generateItemPosition(weapon, true));
+    this.weaponsArray.map(weapon => this.generateItemPosition(weapon, true));
   }
 
   generatePlayersPosition = () => {
