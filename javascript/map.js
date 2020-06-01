@@ -263,7 +263,7 @@ class Map {
 
   isEnemyPosition = (positionY, positionX) => {
     if(positionY < 0 || positionY > this.height-1 || positionX < 0 || positionX > this.height-1) {
-      console.log('not on map');
+      return false;
     } else {
       if(this.mapArray[positionY][positionX][0] instanceof Player) return true;
     }
@@ -301,7 +301,7 @@ class Map {
     $("#choice-modal").transition('fly right');
     $("#choice-modal").css("display", "block");
     $("#choice-header")[0].textContent = player.pseudo + " !";
-    $("#choice-img")[0].src = "/img/" + player.name + ".png";
+    $("#choice-img")[0].src = "./img/" + player.name + ".png";
   }
 
   hideChoiceModal = () => {
@@ -356,8 +356,6 @@ class Map {
   }
 
   restartGame = () => {
-    //redefinir l'app a l'état initial
-    //instance d'init game
     location.reload();
   }
 }
